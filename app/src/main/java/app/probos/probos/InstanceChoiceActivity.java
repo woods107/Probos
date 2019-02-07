@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,8 +31,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.*;
+import com.sys1yagi.mastodon4j.api.Scope;
+import com.sys1yagi.mastodon4j.api.entity.auth.AppRegistration;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Apps;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -145,9 +158,39 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+        //if (mAuthTask != null) {
+          //  return;
+        //}
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                MastodonClient client = new MastodonClient.Builder("cyber-anarchy.net", new OkHttpClient.Builder(), new Gson()).build();
+                Apps apps = new Apps(client);
+                try {
+                    AppRegistration registration = apps.createApp(
+                            "probos-app",
+                            "urn:ietf:wg:oauth:2.0:oob",
+                            new Scope(Scope.Name.ALL),
+                            "https://probos.app"
+                    ).execute();
+                    System.out.println("instance=" + registration.getInstanceName());
+                    Log.d("LoginActivity",registration.getInstanceName());
+                    System.out.println("client_id=" + registration.getClientId());
+                    Log.d("LoginActivity",registration.getClientId());
+                    System.out.println("client_secret=" + registration.getClientSecret());
+                    Log.d("LoginActivity",registration.getClientSecret());
+
+                } catch (Mastodon4jRequestException e) {
+                    int statusCode = e.getResponse().code();
+                    // error handling.
+                }
+            }
+        });
+
+        thread.start();
+
+
 
         // Reset errors.
         mEmailView.setError(null);
