@@ -1,5 +1,6 @@
 package app.probos.probos;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 
 public class TimelineActivity extends AppCompatActivity {
 
+    String instanceName;
+    String accessTokenStr;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -40,7 +44,9 @@ public class TimelineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-
+        Intent currIntent = getIntent();
+        instanceName = currIntent.getStringExtra("instancename");
+        accessTokenStr = currIntent.getStringExtra("accesstoken");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -107,12 +113,15 @@ public class TimelineActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     Tab1Personal tab1 = new Tab1Personal();
+                    tab1.setInfo(instanceName,accessTokenStr);
                     return tab1;
                 case 1:
                     Tab2Local tab2 = new Tab2Local();
+                    tab2.setInfo(instanceName,accessTokenStr);
                     return tab2;
                 case 2:
                     Tab3Federated tab3 = new Tab3Federated();
+                    tab3.setInfo(instanceName,accessTokenStr);
                     return tab3;
                 default:
                     return null;
