@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.sys1yagi.mastodon4j.api.entity.Attachment;
 import com.sys1yagi.mastodon4j.rx.*;
 import com.sys1yagi.mastodon4j.*;
 import com.sys1yagi.mastodon4j.api.Pageable;
@@ -54,6 +55,7 @@ import org.w3c.dom.Text;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -285,6 +287,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             mAuthTask.execute((Void) null);
         }*/
     }
+    AccessToken accessToken;
 
     private void actualSignIn() throws Mastodon4jRequestException {
         TextView authField = findViewById(R.id.auth_text);
@@ -295,13 +298,18 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             @Override
             public void run() {
                 try {
-                    AccessToken accessToken = accessTokenMastodonRequest.execute();
+                    accessToken = accessTokenMastodonRequest.execute();
                     String accessTokenStr = accessToken.getAccessToken();
                     authClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessTokenStr).build();
                     Timelines timelines = new Timelines(authClient);
                     Pageable<Status> statuses = timelines.getHome(new Range()).execute();
                     List<Status> statusList = statuses.getPart();
-                    Log.d("pleasegodwork", statusList.get(0).getAccount().getDisplayName());
+                    for (int i = 0; i < statusList.size(); i++) {
+                        Log.d("statusUser", statusList.get(i).getAccount().getDisplayName());
+                        Log.d("statusMSG", statusList.get(i).getContent());
+                        Log.d("profilePic", statusList.get(i).getAccount().getAvatar());
+                        List<Attachment> attach = statusList.get(i).getMediaAttachments();
+                    }
                 } catch (Mastodon4jRequestException e) {
                     e.printStackTrace();
                 }
@@ -309,6 +317,10 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         });
 
         finalAuthThr.start();
+
+        Intent intent = new Intent(this, TimelineActivity.class);
+        intent.putExtra("accesstoken",accessToken.getAccessToken());
+        startActivity(intent);
     }
 
     private boolean isEmailValid(String email) {

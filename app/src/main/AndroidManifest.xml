@@ -32,7 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WebViewActivity"></activity>
+        <activity android:name=".WebViewActivity" />
+        <activity
+            android:name=".TimelineActivity"
+            android:label="@string/title_activity_timeline"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
