@@ -4,8 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +41,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.sys1yagi.mastodon4j.api.entity.Attachment;
 import com.sys1yagi.mastodon4j.rx.*;
 import com.sys1yagi.mastodon4j.*;
 import com.sys1yagi.mastodon4j.api.Pageable;
@@ -54,6 +59,7 @@ import org.w3c.dom.Text;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +94,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    boolean signInSuccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +120,23 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                if (attemptLogin()) {
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(InstanceChoiceActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(InstanceChoiceActivity.this);
+                    }
+                    builder.setTitle("Invalid instance")
+                            .setMessage("The instance provided was invalid or unavailable. Please try again.")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
             }
         });
 
@@ -124,7 +147,21 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 try {
                     actualSignIn();
                 } catch (Exception e) {
-                    throw new IndexOutOfBoundsException();
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(InstanceChoiceActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(InstanceChoiceActivity.this);
+                    }
+                    builder.setTitle("Invalid authentication code")
+                            .setMessage("The authentication code provided was invalid. Please try again.")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
                 }
             }
         });
@@ -193,12 +230,13 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
     private WebView mWebview ;
 
-    private void attemptLogin() {
+    private boolean attemptLogin() {
         //if (mAuthTask != null) {
           //  return;
         //}
         TextView login = findViewById(R.id.email);
         instanceName = login.getText().toString();
+        Handler mHandler=new Handler();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -221,8 +259,10 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                     Log.d("LoginActivity",registration.getClientSecret());
                     clientSecret = registration.getClientSecret();
                 } catch (Mastodon4jRequestException e) {
-                    int statusCode = e.getResponse().code();
+                    //int statusCode = e.getResponse().code();
                     // error handling.
+                    signInSuccess = true;
+                    return;
                 }
 
                 String clientId = registration.getClientId();
@@ -284,7 +324,9 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }*/
+        return signInSuccess;
     }
+    AccessToken accessToken;
 
     private void actualSignIn() throws Mastodon4jRequestException {
         TextView authField = findViewById(R.id.auth_text);
@@ -295,20 +337,37 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             @Override
             public void run() {
                 try {
-                    AccessToken accessToken = accessTokenMastodonRequest.execute();
-                    String accessTokenStr = accessToken.getAccessToken();
+                    accessToken = accessTokenMastodonRequest.execute();
+                   /* String accessTokenStr = accessToken.getAccessToken();
                     authClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessTokenStr).build();
                     Timelines timelines = new Timelines(authClient);
                     Pageable<Status> statuses = timelines.getHome(new Range()).execute();
                     List<Status> statusList = statuses.getPart();
-                    Log.d("pleasegodwork", statusList.get(0).getAccount().getDisplayName());
+                    for (int i = 0; i < statusList.size(); i++) {
+                        Log.d("statusUser", statusList.get(i).getAccount().getDisplayName());
+                        Log.d("statusMSG", statusList.get(i).getContent());
+                        Log.d("profilePic", statusList.get(i).getAccount().getAvatar());
+                        List<Attachment> attach = statusList.get(i).getMediaAttachments();
+                    }*/
                 } catch (Mastodon4jRequestException e) {
                     e.printStackTrace();
                 }
+
             }
         });
 
         finalAuthThr.start();
+
+        try {
+            finalAuthThr.join();
+            Intent intent = new Intent(this, TimelineActivity.class);
+            intent.putExtra("accesstoken", accessToken.getAccessToken());
+            intent.putExtra("instancename",instanceName);
+            startActivity(intent);
+            finish();
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private boolean isEmailValid(String email) {
