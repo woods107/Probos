@@ -44,7 +44,8 @@ public class Tab1Personal extends Fragment {
             @Override
             public void run() {
                 try {
-                    Pageable<Status> statuses = timelines.getHome(new Range()).execute();
+                    Range range = new Range(null,null,50);
+                    Pageable<Status> statuses = timelines.getHome(range).execute();
                     statusList = statuses.getPart();
                 } catch (Exception e) {
                     throw new IllegalArgumentException();
@@ -62,7 +63,7 @@ public class Tab1Personal extends Fragment {
         TimelineAdapter timelineAdapter = new TimelineAdapter(statusList);
         personalRecycler.setAdapter(timelineAdapter);
         personalRecycler.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-
+        personalRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
         return rootView;
     }
 

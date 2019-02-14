@@ -120,8 +120,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
-                if (!signInSuccess) {
+                if (attemptLogin()) {
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         builder = new AlertDialog.Builder(InstanceChoiceActivity.this, android.R.style.Theme_Material_Dialog_Alert);
@@ -231,7 +230,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
     private WebView mWebview ;
 
-    private void attemptLogin() {
+    private boolean attemptLogin() {
         //if (mAuthTask != null) {
           //  return;
         //}
@@ -325,6 +324,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }*/
+        return signInSuccess;
     }
     AccessToken accessToken;
 
