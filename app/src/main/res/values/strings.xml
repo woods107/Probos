@@ -15,4 +15,5 @@
     </string>
     <string name="authcode">Authentication code</string>
     <string name="get_auth">Get Authentication Code</string>
+    <string name="title_activity_user_list">UserListActivity</string>
 </resources>
