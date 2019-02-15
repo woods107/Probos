@@ -32,4 +32,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.github.sys1yagi.mastodon4j:mastodon4j:1.7.0'
     implementation 'com.github.sys1yagi.mastodon4j:mastodon4j-rx:1.7.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
 }

@@ -35,19 +35,5 @@
             android:text="TextView"
             android:textColor="#777777" />
 
-        <TextView
-            android:id="@+id/msgMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="#dbdbdb" />
-
-        <TextView
-            android:id="@+id/msgTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="#777777" />
-
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
