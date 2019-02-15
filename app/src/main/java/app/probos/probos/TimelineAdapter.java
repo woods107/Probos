@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class TimelineAdapter extends
         RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
 
@@ -35,7 +37,7 @@ public class TimelineAdapter extends
         // for any view that will be set as you render a row
         public TextView messageUser;
         public TextView messageMessage;
-        public ImageView profilePicture;
+        public CircleImageView profilePicture;
         public TextView messageFullUser;
         public TextView messageTime;
 
@@ -48,7 +50,7 @@ public class TimelineAdapter extends
 
             messageUser = (TextView) itemView.findViewById(R.id.msgUser);
             messageMessage = (TextView) itemView.findViewById(R.id.msgMessage);
-            profilePicture = (ImageView) itemView.findViewById(R.id.profile_picture);
+            profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
             messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
         }
@@ -106,12 +108,20 @@ public class TimelineAdapter extends
 
         // Set item views based on your views and data model
         TextView msgUserText = viewHolder.messageUser;
-        msgUserText.setText(status.getAccount().getDisplayName());
+        String displayName = status.getAccount().getDisplayName();
+        if (!displayName.equals("")) {
+            msgUserText.setText(status.getAccount().getDisplayName());
+        } else {
+            msgUserText.setText(status.getAccount().getUserName());
+        }
 
         TextView msgMsgText = viewHolder.messageMessage;
         String rawContent = status.getContent();
-        String content = rawContent.substring(3,rawContent.length()-4);
-        msgMsgText.setText(Html.fromHtml(content,0));
+        String content = "";
+        if (rawContent.length()>0) {
+             content = rawContent.substring(3, rawContent.length() - 4);
+        }
+        msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
 
         TextView msgFullUserText = viewHolder.messageFullUser;
         msgFullUserText.setText("@" + status.getAccount().getAcct());
@@ -122,11 +132,15 @@ public class TimelineAdapter extends
 
         msgTimeText.setText(time);
 
-        ImageView imageView = viewHolder.profilePicture;
-        imageView.getLayoutParams().height = 80;
-        imageView.getLayoutParams().width = 80;
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        CircleImageView imageView = viewHolder.profilePicture;
         imageView.setImageBitmap(profilePictures.get(position));
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 
