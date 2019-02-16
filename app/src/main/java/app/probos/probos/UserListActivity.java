@@ -1,5 +1,6 @@
 package app.probos.probos;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,13 +31,15 @@ public class UserListActivity extends AppCompatActivity {
 
     String instanceName;
     String accessToken;
-    Long acctId;
+    String acctId;
 
+    /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
         this.instanceName = instanceName;
         this.accessToken = accessToken;
         this.acctId = acctId;
     }
+    */
 
     RecyclerView userRecycler;
     List<Account> accounts;
@@ -51,10 +54,17 @@ public class UserListActivity extends AppCompatActivity {
         // Once the UI is more developed, it will be useful to have
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Intent currIntent = getIntent();
+        acctId = currIntent.getStringExtra("id");
+        instanceName = currIntent.getStringExtra("name");
+        accessToken = currIntent.getStringExtra("token");
 
         // Begin instantiating the userRecycler
         userRecycler = findViewById(R.id.user_recycler);
-        //View rootView = inflater.inflate(R.layout.tab1personal, container, false);
+
+        // Figure out how to set this up better
+        //View rootView = getLayoutInflater().inflate
+
         MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         Accounts tmpAcct = new Accounts(userClient);
 
@@ -66,7 +76,7 @@ public class UserListActivity extends AppCompatActivity {
 
                     // Gets the first 50 users from the list of followers acctId has
                     Range range = new Range(null,null,50);
-                    Pageable<Account> users = tmpAcct.getFollowers(acctId, range).execute();
+                    Pageable<Account> users = tmpAcct.getFollowers(Long.parseLong(acctId), range).execute();
                     accounts = users.getPart();
 
                 } catch (Exception e) {

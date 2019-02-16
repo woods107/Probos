@@ -1,6 +1,7 @@
 package app.probos.probos;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -132,13 +133,17 @@ public class TimelineAdapter extends
 
         msgTimeText.setText(time);
 
-
         CircleImageView imageView = viewHolder.profilePicture;
         imageView.setImageBitmap(profilePictures.get(position));
+        imageView.bringToFront();
         imageView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                intent.putExtra("id", status.getAccount().getId());
+                intent.putExtra("name", TimelineActivity.accessTokenStr);
+                intent.putExtra("token", TimelineActivity.instanceName);
             }
         });
 

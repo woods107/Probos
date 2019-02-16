@@ -1,6 +1,7 @@
 package app.probos.probos;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class UserListAdapter extends
         RecyclerView.Adapter<UserListAdapter.ViewHolder> {
 
@@ -32,7 +35,7 @@ public class UserListAdapter extends
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView messageUser;
-        public ImageView profilePicture;
+        public CircleImageView profilePicture;
         public TextView messageFullUser;
 
         // We also create a constructor that accepts the entire item row
@@ -43,7 +46,7 @@ public class UserListAdapter extends
             super(itemView);
 
             messageUser = (TextView) itemView.findViewById(R.id.msgUser);
-            profilePicture = (ImageView) itemView.findViewById(R.id.profile_picture);
+            profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
             messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
         }
     }
@@ -85,7 +88,7 @@ public class UserListAdapter extends
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View contactView = inflater.inflate(R.layout.item_timeline, parent, false);
+        View contactView = inflater.inflate(R.layout.item_user_list, parent, false);
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(contactView);
@@ -118,13 +121,25 @@ public class UserListAdapter extends
         String time = rawTime.substring(0,10) + " " + rawTime.substring(12,19) + " UTC";
 
         msgTimeText.setText(time);
-        */
 
         ImageView imageView = viewHolder.profilePicture;
         imageView.getLayoutParams().height = 80;
         imageView.getLayoutParams().width = 80;
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         imageView.setImageBitmap(profilePictures.get(position));
+        */
+
+        CircleImageView imageView = viewHolder.profilePicture;
+        imageView.setImageBitmap(profilePictures.get(position));
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                intent.putExtra("id", gAcct.getId());
+                intent.putExtra("name", TimelineActivity.accessTokenStr);
+                intent.putExtra("token", TimelineActivity.instanceName);
+            }
+        });
 
     }
 
