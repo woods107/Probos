@@ -76,6 +76,7 @@ public class TimelineAdapter extends
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
 
 
+
     // Pass in the contact array into the constructor
     public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
         mStatuses = statuses;
@@ -189,6 +190,30 @@ public class TimelineAdapter extends
                 });
 
                 favoritePoss.start();
+            }
+        });
+        ImageButton boostButton = viewHolder.favoriteButton;
+        if(status.isReblogged()){
+            boostButton.setImageResource(android.R.drawable.ic_menu_rotate);//what da image
+        }
+        boostButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Thread favoritePoss = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(status.isReblogged()){
+                                statusesAPI.postUnreblog(id).execute();
+                                //add turning button on/off
+                            }else{
+                                statusesAPI.postReblog(id).execute();
+                            }
+                        }catch (Exception e) {
+                            throw new IndexOutOfBoundsException();
+                        }
+                    }
+                });
             }
         });
 
