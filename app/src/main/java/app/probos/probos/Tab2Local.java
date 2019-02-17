@@ -48,7 +48,7 @@ public class Tab2Local extends Fragment {
                 } catch (Exception e) {
                     throw new IllegalArgumentException();
                 }
-                timelineAdapter = new TimelineAdapter(statusList);
+                timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
             }
         });
 

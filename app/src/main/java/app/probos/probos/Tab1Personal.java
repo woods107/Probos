@@ -49,7 +49,7 @@ public class Tab1Personal extends Fragment {
                 } catch (Exception e) {
                     throw new IllegalArgumentException();
                 }
-                timelineAdapter = new TimelineAdapter(statusList);
+                timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
             }
         });
 

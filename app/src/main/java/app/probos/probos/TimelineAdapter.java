@@ -8,10 +8,16 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.MastodonRequest;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Favourites;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
 
 import org.w3c.dom.Text;
 
@@ -24,11 +30,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.OkHttpClient;
 
 public class TimelineAdapter extends
         RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
+
+    MastodonClient client;
+    Statuses statusesAPI;
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -40,6 +51,9 @@ public class TimelineAdapter extends
         public CircleImageView profilePicture;
         public TextView messageFullUser;
         public TextView messageTime;
+        public ImageButton favoriteButton;
+
+
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -53,16 +67,20 @@ public class TimelineAdapter extends
             profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
             messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
+            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
         }
     }
 
     private List<Status> mStatuses;
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
+    private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
 
 
     // Pass in the contact array into the constructor
-    public TimelineAdapter(List<Status> statuses) {
+    public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
         mStatuses = statuses;
+        client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        statusesAPI = new Statuses(client);
         Thread getProfPics = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -71,6 +89,7 @@ public class TimelineAdapter extends
                         URL newurl = new URL(statuses.get(i).getAccount().getAvatar());
                         Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                         profilePictures.add(ppBitmap);
+                        isFavoritedList.add(statuses.get(i).isFavourited());
                     }
                 } catch (Exception e) {
                     //do nothing
@@ -105,6 +124,7 @@ public class TimelineAdapter extends
     public void onBindViewHolder(TimelineAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
         Status status = mStatuses.get(position);
+        Long id = status.getId();
 
         // Set item views based on your views and data model
         TextView msgUserText = viewHolder.messageUser;
@@ -139,6 +159,36 @@ public class TimelineAdapter extends
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        ImageButton favoriteButton = viewHolder.favoriteButton;
+        if (status.isFavourited()) {
+            favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+        }
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Thread favoritePoss = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (isFavoritedList.get(viewHolder.getAdapterPosition())){
+                                statusesAPI.postUnfavourite(id).execute();
+                                isFavoritedList.set(viewHolder.getAdapterPosition(), false);
+                                favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
+                            } else {
+                                statusesAPI.postFavourite(id).execute();
+                                isFavoritedList.set(viewHolder.getAdapterPosition(), true);
+                                favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+                            }
+                        } catch (Exception e) {
+                            throw new IndexOutOfBoundsException();
+                        }
+                    }
+                });
+
+                favoritePoss.start();
             }
         });
 

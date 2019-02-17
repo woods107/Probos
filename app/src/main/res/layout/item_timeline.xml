@@ -73,7 +73,7 @@
             android:layout_marginStart="8dp"
             android:text="TextView"
             android:textColor="#777777"
-            app:layout_constraintBottom_toBottomOf="parent"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/msgMessage" />
 
@@ -83,9 +83,21 @@
             android:background="#696969"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="40dp"
             app:layout_constraintTop_toBottomOf="@+id/msgTime"
             app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/favorite_butto"
+            android:layout_width="23dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime"
+            app:srcCompat="@android:drawable/btn_star_big_off" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
