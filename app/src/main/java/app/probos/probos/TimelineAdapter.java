@@ -1,6 +1,7 @@
 package app.probos.probos;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import android.support.v7.app.AppCompatActivity;
+
+
+
 
 public class TimelineAdapter extends
         RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
@@ -144,6 +150,12 @@ public class TimelineAdapter extends
                 intent.putExtra("id", status.getAccount().getId());
                 intent.putExtra("name", TimelineActivity.accessTokenStr);
                 intent.putExtra("token", TimelineActivity.instanceName);
+                // Need to add a Context/ContextWrapper startActivity statement here
+                try {
+                    v.getContext().startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }// End try/catch block
             }
         });
 

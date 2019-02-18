@@ -31,7 +31,7 @@ public class UserListActivity extends AppCompatActivity {
 
     String instanceName;
     String accessToken;
-    String acctId;
+    Long acctId;
 
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
@@ -55,7 +55,7 @@ public class UserListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent currIntent = getIntent();
-        acctId = currIntent.getStringExtra("id");
+        acctId = currIntent.getLongExtra("id", 0);
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
@@ -76,11 +76,11 @@ public class UserListActivity extends AppCompatActivity {
 
                     // Gets the first 50 users from the list of followers acctId has
                     Range range = new Range(null,null,50);
-                    Pageable<Account> users = tmpAcct.getFollowers(Long.parseLong(acctId), range).execute();
+                    Pageable<Account> users = tmpAcct.getFollowers(acctId, range).execute();
                     accounts = users.getPart();
 
                 } catch (Exception e) {
-                    throw new IllegalArgumentException();
+                    e.printStackTrace();
                 }
             }
         });
