@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 //import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -100,6 +101,21 @@ public class UserListActivity extends AppCompatActivity {
         userRecycler.setLayoutManager(new LinearLayoutManager(this));
         userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
         //return rootView;
+
+    }
+
+    //TODO perhaps comment out this Overridden function later
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
 
     }
 

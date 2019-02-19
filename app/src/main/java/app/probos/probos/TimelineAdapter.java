@@ -74,7 +74,7 @@ public class TimelineAdapter extends
             profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
             messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
-            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
+            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_butto);
         }
     }
 
@@ -168,8 +168,8 @@ public class TimelineAdapter extends
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), UserListActivity.class);
                 intent.putExtra("id", status.getAccount().getId());
-                intent.putExtra("name", TimelineActivity.accessTokenStr);
-                intent.putExtra("token", TimelineActivity.instanceName);
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
                 // Need to add a Context/ContextWrapper startActivity statement here
                 try {
                     v.getContext().startActivity(intent);
