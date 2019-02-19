@@ -52,6 +52,7 @@ public class TimelineAdapter extends
         public TextView messageFullUser;
         public TextView messageTime;
         public ImageButton favoriteButton;
+        public ImageButton boostButton;
 
 
 
@@ -68,6 +69,7 @@ public class TimelineAdapter extends
             messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
             favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
+            boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
         }
     }
 
@@ -192,9 +194,9 @@ public class TimelineAdapter extends
                 favoritePoss.start();
             }
         });
-        ImageButton boostButton = viewHolder.favoriteButton;
+        ImageButton boostButton = viewHolder.boostButton;
         if(status.isReblogged()){
-            boostButton.setImageResource(android.R.drawable.ic_menu_rotate);//what da image
+            boostButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
         }
         boostButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -205,9 +207,11 @@ public class TimelineAdapter extends
                         try {
                             if(status.isReblogged()){
                                 statusesAPI.postUnreblog(id).execute();
+                                boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
                                 //add turning button on/off
                             }else{
                                 statusesAPI.postReblog(id).execute();
+                                boostButton.setImageResource(android.R.drawable.checkbox_on_background);
                             }
                         }catch (Exception e) {
                             throw new IndexOutOfBoundsException();
