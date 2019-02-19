@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
@@ -333,6 +334,11 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         authCode = authField.getText().toString();
         MastodonRequest<AccessToken> accessTokenMastodonRequest = apps.getAccessToken(clientId, clientSecret, "urn:ietf:wg:oauth:2.0:oob", authCode, "authorization_code");
 
+        SharedPreferences li=getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences.Editor Ed=li.edit();
+        Ed.putString(authCode, String.valueOf(1));
+        Ed.putString(instanceName, String.valueOf(2));
+        Ed.commit();
         Thread finalAuthThr = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -372,6 +378,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
+
         return email.contains("@");
     }
 
@@ -541,6 +548,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             authCode = uri.getQueryParameter("code");
         }
     }
+
 
 }
 

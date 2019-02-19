@@ -201,7 +201,7 @@ public class TimelineAdapter extends
         boostButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Thread favoritePoss = new Thread(new Runnable() {
+                Thread boostPoss = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -218,6 +218,7 @@ public class TimelineAdapter extends
                         }
                     }
                 });
+                boostPoss.start();
             }
         });
 
