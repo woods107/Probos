@@ -1,12 +1,15 @@
 package app.probos.probos;
 
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,6 +36,10 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import android.support.v7.app.AppCompatActivity;
+
+
+
 import okhttp3.OkHttpClient;
 
 public class TimelineAdapter extends
@@ -67,7 +74,7 @@ public class TimelineAdapter extends
             profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
             messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
-            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
+            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_butto);
         }
     }
 
@@ -152,13 +159,23 @@ public class TimelineAdapter extends
 
         msgTimeText.setText(time);
 
-
         CircleImageView imageView = viewHolder.profilePicture;
         imageView.setImageBitmap(profilePictures.get(position));
+        imageView.bringToFront();
         imageView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                intent.putExtra("id", status.getAccount().getId());
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
+                // Need to add a Context/ContextWrapper startActivity statement here
+                try {
+                    v.getContext().startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }// End try/catch block
             }
         });
 
