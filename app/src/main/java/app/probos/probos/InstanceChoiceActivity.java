@@ -100,6 +100,18 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+        String savedAuth=sp1.getString("savedAuth", null);
+        String savedInstance = sp1.getString("instance", null);
+        if(savedAuth!=null){
+            authCode=savedAuth;
+            instanceName=savedInstance;
+            try {
+                actualSignIn();
+            } catch (Mastodon4jRequestException e) {
+                e.printStackTrace();
+            }
+        }
         setContentView(R.layout.activity_instance_choice);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -336,9 +348,10 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
         SharedPreferences li=getSharedPreferences("Login", MODE_PRIVATE);
         SharedPreferences.Editor Ed=li.edit();
-        Ed.putString(authCode, String.valueOf(1));
-        Ed.putString(instanceName, String.valueOf(2));
+        Ed.putString("savedAuth", authCode);
+        Ed.putString("instance", instanceName);
         Ed.commit();
+
         Thread finalAuthThr = new Thread(new Runnable() {
             @Override
             public void run() {
