@@ -131,6 +131,7 @@ public class UserListAdapter extends
 
         CircleImageView imageView = viewHolder.profilePicture;
         imageView.setImageBitmap(profilePictures.get(position));
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,8 +139,14 @@ public class UserListAdapter extends
                 intent.putExtra("id", gAcct.getId());
                 intent.putExtra("name", TimelineActivity.accessTokenStr);
                 intent.putExtra("token", TimelineActivity.instanceName);
+                try {
+                    v.getContext().startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }// End try/catch block
             }
         });
+
 
     }
 

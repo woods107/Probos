@@ -104,8 +104,7 @@ public class UserListActivity extends AppCompatActivity {
 
     }
 
-    //TODO perhaps comment out this Overridden function later
-
+    // TODO Debug why nested user lists sometimes breaks
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
