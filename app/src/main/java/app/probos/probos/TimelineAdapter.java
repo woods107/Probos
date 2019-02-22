@@ -1,7 +1,6 @@
 package app.probos.probos;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,22 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
-import com.sys1yagi.mastodon4j.MastodonRequest;
 import com.sys1yagi.mastodon4j.api.entity.Status;
-import com.sys1yagi.mastodon4j.api.method.Favourites;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,11 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import android.support.v7.app.AppCompatActivity;
-
 
 
 import okhttp3.OkHttpClient;
@@ -69,12 +58,12 @@ public class TimelineAdapter extends
             // to access the context from any ViewHolder instance.
             super(itemView);
 
-            messageUser = (TextView) itemView.findViewById(R.id.msgUser);
+            messageUser = (TextView) itemView.findViewById(R.id.displayName);
             messageMessage = (TextView) itemView.findViewById(R.id.msgMessage);
-            profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
-            messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
+            profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_full_picture);
+            messageFullUser = (TextView) itemView.findViewById(R.id.fullUserName);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
-            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_butto);
+            favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
         }
     }
 
@@ -145,9 +134,9 @@ public class TimelineAdapter extends
         TextView msgMsgText = viewHolder.messageMessage;
         String rawContent = status.getContent();
         String content = "";
-        if (rawContent.length()>0) {
+        /*if (rawContent.length()>0) {
              content = rawContent.substring(3, rawContent.length() - 4);
-        }
+        }*/
         msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
 
         TextView msgFullUserText = viewHolder.messageFullUser;
@@ -166,7 +155,7 @@ public class TimelineAdapter extends
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("id", status.getAccount().getId());
                 intent.putExtra("token", TimelineActivity.accessTokenStr);
                 intent.putExtra("name", TimelineActivity.instanceName);
