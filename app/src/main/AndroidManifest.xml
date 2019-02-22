@@ -24,6 +24,10 @@
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ExpandedStatusActivity"
+            android:label="@string/title_activity_expanded_status"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".InstanceChoiceActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance">
