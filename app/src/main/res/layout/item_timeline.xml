@@ -97,5 +97,16 @@
             app:layout_constraintTop_toBottomOf="@+id/msgTime"
             app:srcCompat="@android:drawable/btn_star_big_off" />
 
+        <Button
+            android:id="@+id/more_button"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:text="more"
+            android:textColor="#dbdbdb"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

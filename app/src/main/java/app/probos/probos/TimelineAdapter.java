@@ -9,6 +9,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -48,7 +49,7 @@ public class TimelineAdapter extends
         public TextView messageFullUser;
         public TextView messageTime;
         public ImageButton favoriteButton;
-
+        public Button moreButton;
 
 
         // We also create a constructor that accepts the entire item row
@@ -64,6 +65,7 @@ public class TimelineAdapter extends
             messageFullUser = (TextView) itemView.findViewById(R.id.fullUserName);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
             favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
+            moreButton = (Button) itemView.findViewById(R.id.more_button);
         }
     }
 
@@ -195,6 +197,23 @@ public class TimelineAdapter extends
                 });
 
                 favoritePoss.start();
+            }
+        });
+
+        Button moreBtn = viewHolder.moreButton;
+        moreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ExpandedStatusActivity.class);
+                intent.putExtra("id", status.getId());
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
+                // Need to add a Context/ContextWrapper startActivity statement here
+                try {
+                    v.getContext().startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }// End try/catch block
             }
         });
 
