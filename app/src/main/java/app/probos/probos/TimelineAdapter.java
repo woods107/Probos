@@ -1,11 +1,14 @@
 package app.probos.probos;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +18,12 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Public;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.method.Timelines;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -26,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -49,6 +57,8 @@ public class TimelineAdapter extends
         public TextView messageFullUser;
         public TextView messageTime;
         public ImageButton favoriteButton;
+        public ImageButton boostButton;
+
         public Button moreButton;
 
 
@@ -65,6 +75,7 @@ public class TimelineAdapter extends
             messageFullUser = (TextView) itemView.findViewById(R.id.fullUserName);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
             favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
+            boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
             moreButton = (Button) itemView.findViewById(R.id.more_button);
         }
     }
@@ -72,6 +83,7 @@ public class TimelineAdapter extends
     private List<Status> mStatuses;
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
+
 
 
     // Pass in the contact array into the constructor
@@ -121,8 +133,65 @@ public class TimelineAdapter extends
     @Override
     public void onBindViewHolder(TimelineAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
+
+
         Status status = mStatuses.get(position);
         Long id = status.getId();
+
+
+        if (position == mStatuses.size()-1) {
+            Thread olderRetrieval = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // This is where older statuses are loaded and added to the end of mStatuses
+
+
+                    try {
+                        Range range = new Range(id, null, 50);
+                        Timelines timelines = new Timelines(client);
+                        Public pub = new Public(client);
+                        // Use flag for which timeline is active
+                        //System.out.println(viewHolder.itemView);
+                        if (TimelineActivity.flag.equals("PERSONAL")) {
+                            Pageable<Status> statuses = timelines.getHome(range).execute();
+                            System.out.println(mStatuses.size());
+                            mStatuses.addAll(statuses.getPart());
+                            System.out.println(mStatuses.size());
+                        } else if (TimelineActivity.flag.equals("LOCAL")) {
+                            Pageable<Status> statuses = pub.getLocalPublic(range).execute();
+                            mStatuses.addAll(statuses.getPart());
+                        } else if (TimelineActivity.flag.equals("FEDERATED")) {
+                            Pageable<Status> statuses = pub.getFederatedPublic(range).execute();
+                            mStatuses.addAll(statuses.getPart());
+                        }
+                        //mStatuses.addAll()
+
+
+                        for (int i = position+1; i < mStatuses.size(); i++) {
+                            URL newurl = new URL(mStatuses.get(i).getAccount().getAvatar());
+                            Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+                            profilePictures.add(ppBitmap);
+                            isFavoritedList.add(mStatuses.get(i).isFavourited());
+                        }
+
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //System.out.println(mStatuses.size());
+
+                }
+
+            });
+
+            olderRetrieval.start();
+            try {
+                olderRetrieval.join();
+            } catch (Exception e) { e.printStackTrace(); }
+
+        }// End position if
 
         // Set item views based on your views and data model
         TextView msgUserText = viewHolder.messageUser;
@@ -191,12 +260,50 @@ public class TimelineAdapter extends
                                 favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
                             }
                         } catch (Exception e) {
-                            throw new IndexOutOfBoundsException();
+                            e.printStackTrace();
                         }
                     }
                 });
 
                 favoritePoss.start();
+                /*try{
+                    favoritePoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }??*/
+            }
+        });
+
+        ImageButton boostButton = viewHolder.boostButton;
+        if(status.isReblogged()){
+            boostButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
+        }
+        boostButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Thread boostPoss = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(status.isReblogged()){
+                                statusesAPI.postUnreblog(id).execute();
+                                boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
+                                //add turning button on/off
+                            }else{
+                                statusesAPI.postReblog(id).execute();
+                                boostButton.setImageResource(android.R.drawable.checkbox_on_background);
+                            }
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                boostPoss.start();
+                /*try{
+                    boostPoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
             }
         });
 
