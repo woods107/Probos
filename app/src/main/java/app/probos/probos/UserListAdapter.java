@@ -5,23 +5,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sys1yagi.mastodon4j.api.entity.Account;
-import com.sys1yagi.mastodon4j.api.entity.Status;
 
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -45,9 +37,9 @@ public class UserListAdapter extends
             // to access the context from any ViewHolder instance.
             super(itemView);
 
-            messageUser = (TextView) itemView.findViewById(R.id.msgUser);
-            profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_picture);
-            messageFullUser = (TextView) itemView.findViewById(R.id.msgFullUser);
+            messageUser = (TextView) itemView.findViewById(R.id.displayName);
+            profilePicture = (CircleImageView) itemView.findViewById(R.id.profile_full_picture);
+            messageFullUser = (TextView) itemView.findViewById(R.id.fullUserName);
         }
     }
 
@@ -103,7 +95,11 @@ public class UserListAdapter extends
 
         // Set item views based on your views and data model
         TextView msgUserText = viewHolder.messageUser;
-        msgUserText.setText(gAcct.getDisplayName());
+        if (!gAcct.getDisplayName().equals("")) {
+            msgUserText.setText(gAcct.getDisplayName());
+        } else {
+            msgUserText.setText(gAcct.getUserName());
+        }
 
         /*
         TextView msgMsgText = viewHolder.messageMessage;
@@ -114,6 +110,7 @@ public class UserListAdapter extends
 
         TextView msgFullUserText = viewHolder.messageFullUser;
         msgFullUserText.setText("@" + gAcct.getAcct());
+
 
         /*
         TextView msgTimeText = viewHolder.messageTime;
@@ -135,10 +132,10 @@ public class UserListAdapter extends
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("id", gAcct.getId());
-                intent.putExtra("name", TimelineActivity.accessTokenStr);
-                intent.putExtra("token", TimelineActivity.instanceName);
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
                 try {
                     v.getContext().startActivity(intent);
                 } catch (Exception e) {
