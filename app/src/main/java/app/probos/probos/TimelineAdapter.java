@@ -48,6 +48,7 @@ public class TimelineAdapter extends
         public TextView messageFullUser;
         public TextView messageTime;
         public ImageButton favoriteButton;
+        public ImageButton boostButton;
 
 
 
@@ -64,12 +65,14 @@ public class TimelineAdapter extends
             messageFullUser = (TextView) itemView.findViewById(R.id.fullUserName);
             messageTime = (TextView) itemView.findViewById(R.id.msgTime);
             favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
+            boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
         }
     }
 
     private List<Status> mStatuses;
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
+
 
 
     // Pass in the contact array into the constructor
@@ -189,12 +192,50 @@ public class TimelineAdapter extends
                                 favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
                             }
                         } catch (Exception e) {
-                            throw new IndexOutOfBoundsException();
+                            e.printStackTrace();
                         }
                     }
                 });
 
                 favoritePoss.start();
+                /*try{
+                    favoritePoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }??*/
+            }
+        });
+
+        ImageButton boostButton = viewHolder.boostButton;
+        if(status.isReblogged()){
+            boostButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
+        }
+        boostButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Thread boostPoss = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(status.isReblogged()){
+                                statusesAPI.postUnreblog(id).execute();
+                                boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
+                                //add turning button on/off
+                            }else{
+                                statusesAPI.postReblog(id).execute();
+                                boostButton.setImageResource(android.R.drawable.checkbox_on_background);
+                            }
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                boostPoss.start();
+                /*try{
+                    boostPoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
             }
         });
 
