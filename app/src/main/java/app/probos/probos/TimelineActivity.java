@@ -72,9 +72,21 @@ public class TimelineActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                //draft button has been clicked
+                Intent draft = new Intent(TimelineActivity.this , DraftActivity.class);
+                try {
+                    draft.putExtra("instanceName",instanceName);
+                    draft.putExtra("access",accessTokenStr);
+                    startActivity(draft);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }// End try/catch block
+                //startActivity(draft);
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-            }
+                */
+                }
         });
 
     }

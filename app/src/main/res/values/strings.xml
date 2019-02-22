@@ -24,4 +24,5 @@
     <string name="title_activity_draft">DraftActivity</string>
     <string name="title_activity_user_list">UserListActivity</string>
     <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_draft_message">DraftMessage</string>
 </resources>
