@@ -192,14 +192,20 @@ public class TimelineAdapter extends
                                 favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
                             }
                         } catch (Exception e) {
-                            throw new IndexOutOfBoundsException();
+                            e.printStackTrace();
                         }
                     }
                 });
 
                 favoritePoss.start();
+                /*try{
+                    favoritePoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }??*/
             }
         });
+
         ImageButton boostButton = viewHolder.boostButton;
         if(status.isReblogged()){
             boostButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
@@ -220,11 +226,16 @@ public class TimelineAdapter extends
                                 boostButton.setImageResource(android.R.drawable.checkbox_on_background);
                             }
                         }catch (Exception e) {
-                            throw new IndexOutOfBoundsException();
+                            e.printStackTrace();
                         }
                     }
                 });
                 boostPoss.start();
+                /*try{
+                    boostPoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
             }
         });
 
