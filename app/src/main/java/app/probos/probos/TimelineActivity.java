@@ -1,6 +1,7 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +79,7 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
 
@@ -87,6 +90,7 @@ public class TimelineActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -96,6 +100,15 @@ public class TimelineActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+            sp1.edit().clear().commit();
+            try {
+                Intent intent = new Intent(this, InstanceChoiceActivity.class);
+                startActivity(intent);
+                finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
             return true;
         }
 
