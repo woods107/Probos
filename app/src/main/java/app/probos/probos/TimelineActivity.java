@@ -99,6 +99,7 @@ public class TimelineActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        //it works first try!
         if (id == R.id.action_settings) {
             SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
             sp1.edit().clear().commit();
