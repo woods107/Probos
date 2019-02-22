@@ -53,7 +53,6 @@ public class DraftActivity extends AppCompatActivity {
 
 
         if(intent.getLongExtra("replyID",0)>0){
-            isReply = true;
             id = intent.getLongExtra("replyID",0);
 
         }
@@ -76,7 +75,7 @@ public class DraftActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                if(isReply){
+                                if(id != 0){
                                     postUse.postStatus(draft_body.getText().toString(), id, null, false, null).execute();
                                 }else {
                                     postUse.postStatus(draft_body.getText().toString(), null, null, false, null).execute();
