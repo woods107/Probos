@@ -18,18 +18,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/profile_picture"
+            android:id="@+id/profile_full_picture"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginStart="0dp"
             android:layout_marginTop="12dp"
-            app:civ_border_color="#FF000000"
-            app:civ_border_width="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/msgUser"
+            android:id="@+id/displayName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
@@ -41,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/msgFullUser"
+            android:id="@+id/fullUserName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
@@ -49,7 +47,7 @@
             android:text="TextView"
             android:textColor="#777777"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/msgUser" />
+            app:layout_constraintTop_toBottomOf="@+id/displayName" />
 
         <TextView
             android:id="@+id/msgMessage"
@@ -62,13 +60,14 @@
             android:text="TextView"
             android:textColor="#dbdbdb"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profile_picture"
-            tools:layout_editor_absoluteY="65dp" />
+            tools:layout_editor_absoluteY="65dp"
+            app:layout_constraintTop_toBottomOf="@+id/profile_full_picture"/>
 
         <TextView
             android:id="@+id/msgTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:layout_marginStart="8dp"
             android:text="TextView"
             android:textColor="#777777"
@@ -79,12 +78,12 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="40dp"
             android:background="#696969"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/msgTime"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
+            tools:layout_editor_absoluteY="0dp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <ImageButton
             android:id="@+id/favorite_button"
@@ -112,6 +111,4 @@
             tools:layout_editor_absoluteY="114dp" />
 
     </android.support.constraint.ConstraintLayout>
-
-
 </android.support.constraint.ConstraintLayout>
