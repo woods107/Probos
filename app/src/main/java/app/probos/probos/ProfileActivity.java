@@ -5,10 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,8 +18,16 @@ import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.entity.Relationship;
+import com.sys1yagi.mastodon4j.api.method.Follows;
+import com.sys1yagi.mastodon4j.api.method.FollowRequests;
+
 
 import java.net.URL;
+import java.util.List;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.OkHttpClient;
@@ -36,6 +46,25 @@ public class ProfileActivity extends AppCompatActivity {
     Bitmap ppBitmap;
     Bitmap bannerBitmap;
 
+    MastodonClient client;
+    Statuses statusesAPI;
+    Relationship relationship;
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public ImageButton boostButton;
+
+        // We also create a constructor that accepts the entire item row
+        // and does the view lookups to find each subview
+        public ViewHolder(View itemView) {
+            // Stores the itemView in a public final member variable that can be used
+            // to access the context from any ViewHolder instance.
+            super(itemView);
+
+            boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
+
+        }
+    }
+    private List<Status> mStatuses;
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
         this.instanceName = instanceName;
@@ -70,6 +99,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         Accounts tmpAcct = new Accounts(userClient);
+
+
+        client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        statusesAPI = new Statuses(client);
 
         Thread infoRetrieval = new Thread(new Runnable() {
             @Override
@@ -152,6 +185,41 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton followButton= findViewById(R.id.followButton);
+        if(relationship.isFollowing()){
+            followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
+        }else{
+            followButton.setImageResource(android.R.drawable.ic_input_add);
+        }
+
+        followButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Thread boostPoss = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(relationship.isFollowing()){
+                                tmpAcct.postUnFollow(currAcct.getId());
+                                followButton.setImageResource(android.R.drawable.ic_menu_rotate);
+                                //add turning button on/off
+                            }else{
+                                tmpAcct.postFollow(currAcct.getId());
+                                followButton.setImageResource(android.R.drawable.checkbox_on_background);
+                            }
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                boostPoss.start();
+                /*try{
+                    boostPoss.join();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+            }
+        });
         //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
         //UserListAdapter userListAdapter = new UserListAdapter(accounts);
         //userRecycler.setAdapter(userListAdapter);
