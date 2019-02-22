@@ -23,8 +23,8 @@ import android.widget.TextView;
 
 public class TimelineActivity extends AppCompatActivity {
 
-    String instanceName;
-    String accessTokenStr;
+    static String instanceName;
+    static String accessTokenStr;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
