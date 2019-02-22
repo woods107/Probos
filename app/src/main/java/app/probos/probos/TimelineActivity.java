@@ -27,6 +27,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     static String instanceName;
     static String accessTokenStr;
+    static String flag = "PERSONAL";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide

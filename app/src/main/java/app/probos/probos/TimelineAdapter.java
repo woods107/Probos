@@ -1,11 +1,14 @@
 package app.probos.probos;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +17,12 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Public;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.method.Timelines;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -25,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -122,8 +130,65 @@ public class TimelineAdapter extends
     @Override
     public void onBindViewHolder(TimelineAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
+
+
         Status status = mStatuses.get(position);
         Long id = status.getId();
+
+
+        if (position == mStatuses.size()-1) {
+            Thread olderRetrieval = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // This is where older statuses are loaded and added to the end of mStatuses
+
+
+                    try {
+                        Range range = new Range(id, null, 50);
+                        Timelines timelines = new Timelines(client);
+                        Public pub = new Public(client);
+                        // Use flag for which timeline is active
+                        //System.out.println(viewHolder.itemView);
+                        if (TimelineActivity.flag.equals("PERSONAL")) {
+                            Pageable<Status> statuses = timelines.getHome(range).execute();
+                            System.out.println(mStatuses.size());
+                            mStatuses.addAll(statuses.getPart());
+                            System.out.println(mStatuses.size());
+                        } else if (TimelineActivity.flag.equals("LOCAL")) {
+                            Pageable<Status> statuses = pub.getLocalPublic(range).execute();
+                            mStatuses.addAll(statuses.getPart());
+                        } else if (TimelineActivity.flag.equals("FEDERATED")) {
+                            Pageable<Status> statuses = pub.getFederatedPublic(range).execute();
+                            mStatuses.addAll(statuses.getPart());
+                        }
+                        //mStatuses.addAll()
+
+
+                        for (int i = position+1; i < mStatuses.size(); i++) {
+                            URL newurl = new URL(mStatuses.get(i).getAccount().getAvatar());
+                            Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+                            profilePictures.add(ppBitmap);
+                            isFavoritedList.add(mStatuses.get(i).isFavourited());
+                        }
+
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //System.out.println(mStatuses.size());
+
+                }
+
+            });
+
+            olderRetrieval.start();
+            try {
+                olderRetrieval.join();
+            } catch (Exception e) { e.printStackTrace(); }
+
+        }// End position if
 
         // Set item views based on your views and data model
         TextView msgUserText = viewHolder.messageUser;
