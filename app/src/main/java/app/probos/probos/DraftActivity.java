@@ -1,5 +1,8 @@
 package app.probos.probos;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.*;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.MastodonRequest;
@@ -59,10 +61,14 @@ public class DraftActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draft);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //set visibility variable
+        String[] settings = {"visible","private","test","DanielSmeels"};
+        Status.Visibility visibility = Status.Visibility.Public;
+
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -76,9 +82,9 @@ public class DraftActivity extends AppCompatActivity {
                         public void run() {
                             try {
                                 if(id != 0){
-                                    postUse.postStatus(draft_body.getText().toString(), id, null, false, null).execute();
+                                    postUse.postStatus(draft_body.getText().toString(), id, null, false, null,visibility).execute();
                                 }else {
-                                    postUse.postStatus(draft_body.getText().toString(), null, null, false, null).execute();
+                                    postUse.postStatus(draft_body.getText().toString(), null, null, false, null,visibility).execute();
                                 }
                             }catch(Exception e){
                                 //uhhhhhhhhhh
@@ -102,6 +108,39 @@ public class DraftActivity extends AppCompatActivity {
                         .setAction("Action", null).show();*/
             }
         });
-    }
+
+        FloatingActionButton privacy_settings = findViewById(R.id.privacy_settings);
+        privacy_settings.setOnClickListener(new View.OnClickListener() {
+                //do stuff for privacy settings
+
+
+            AlertDialog.Builder settingsMenu = new AlertDialog.Builder(DraftActivity.this);
+            settingsMenu.setTitle("Choose visibility settings");
+            settingsMenu.setItems(settings, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    // the user clicked on colors[which]
+                    switch(which){
+                        case 0:
+                            visibility = Status.Visibility.Public;
+                            break;
+                        case 1:
+                            visibility = Status.Visibility.Direct;
+                            break;
+                        case 2:
+                            visibility = Status.Visibility.Private;
+                            break;
+                        case 3:
+                            visibility = Status.Visibility.Unlisted;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+            });
+            settingsMenu.show();
+
+        });
 
 }

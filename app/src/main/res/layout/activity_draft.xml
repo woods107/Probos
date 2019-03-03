@@ -31,6 +31,18 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/privacy_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+
+
+        android:layout_marginTop="400dp"
+        app:layout_ConstraintBottom_toTopOf="@+id/fab"
+        app:srcCompat="@android:drawable/ic_lock_idle_lock" />
     <EditText
         android:id="@+id/draft_body"
         android:layout_marginStart="3dp"
