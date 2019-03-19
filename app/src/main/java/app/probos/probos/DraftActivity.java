@@ -47,6 +47,10 @@ public class DraftActivity extends AppCompatActivity {
     boolean isReply = false;
     long id = 0;
 
+    //set visibility variable
+    String[] settings = {"Public","Direct","Private","Unlisted"};
+    Status.Visibility visibility = Status.Visibility.Public;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -64,10 +68,10 @@ public class DraftActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //set visibility variable
+/*        //set visibility variable
         String[] settings = {"visible","private","test","DanielSmeels"};
         Status.Visibility visibility = Status.Visibility.Public;
-
+*/
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
 
@@ -113,34 +117,35 @@ public class DraftActivity extends AppCompatActivity {
         privacy_settings.setOnClickListener(new View.OnClickListener() {
                 //do stuff for privacy settings
 
-
-            AlertDialog.Builder settingsMenu = new AlertDialog.Builder(DraftActivity.this);
-            settingsMenu.setTitle("Choose visibility settings");
-            settingsMenu.setItems(settings, new DialogInterface.OnClickListener() {
+            public void onClick(View view) {
+                AlertDialog.Builder settingsMenu = new AlertDialog.Builder(DraftActivity.this);
+                settingsMenu.setTitle("Choose visibility settings");
+                settingsMenu.setItems(settings, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                    // the user clicked on colors[which]
-                    switch(which){
-                        case 0:
-                            visibility = Status.Visibility.Public;
-                            break;
-                        case 1:
-                            visibility = Status.Visibility.Direct;
-                            break;
-                        case 2:
-                            visibility = Status.Visibility.Private;
-                            break;
-                        case 3:
-                            visibility = Status.Visibility.Unlisted;
-                            break;
-                        default:
-                            break;
+                        // the user clicked on colors[which]
+                        switch (which) {
+                            case 0:
+                                visibility = Status.Visibility.Public;
+                                break;
+                            case 1:
+                                visibility = Status.Visibility.Direct;
+                                break;
+                            case 2:
+                                visibility = Status.Visibility.Private;
+                                break;
+                            case 3:
+                                visibility = Status.Visibility.Unlisted;
+                                break;
+                            default:
+                                break;
+                        }
+
                     }
-
-                }
-            });
-            settingsMenu.show();
-
+                });
+                settingsMenu.show();
+            }
         });
 
-}
+    }
+}//dear god

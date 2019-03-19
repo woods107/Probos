@@ -41,9 +41,11 @@
 
 
         android:layout_marginTop="400dp"
-        app:layout_ConstraintBottom_toTopOf="@+id/fab"
         app:srcCompat="@android:drawable/ic_lock_idle_lock" />
+    <!-- app:layout_ConstraintBottom_toTopOf="@+id/fab" -->
+
     <EditText
+        android:autofillHints="@string/title_activity_draft_message"
         android:id="@+id/draft_body"
         android:layout_marginStart="3dp"
         android:layout_marginTop="60dp"
@@ -51,7 +53,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="Write your message here..." />
+        android:hint="@string/title_activity_draft_message" />
 
     <TextView
         android:id="@+id/message_recipient"
@@ -62,7 +64,7 @@
         android:textSize="16sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Toot"
+        android:text="@string/title_activity_draft_message"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
