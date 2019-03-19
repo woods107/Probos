@@ -31,7 +31,21 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/privacy_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+
+
+        android:layout_marginTop="400dp"
+        app:srcCompat="@android:drawable/ic_lock_idle_lock" />
+    <!-- app:layout_ConstraintBottom_toTopOf="@+id/fab" -->
+
     <EditText
+        android:autofillHints="@string/title_activity_draft_message"
         android:id="@+id/draft_body"
         android:layout_marginStart="3dp"
         android:layout_marginTop="60dp"
@@ -39,7 +53,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="Write your message here..." />
+        android:hint="@string/title_activity_draft_message" />
 
     <TextView
         android:id="@+id/message_recipient"
@@ -50,7 +64,7 @@
         android:textSize="16sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Toot"
+        android:text="@string/title_activity_draft_message"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

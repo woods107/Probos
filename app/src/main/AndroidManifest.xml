@@ -46,12 +46,12 @@
         </activity>
         <activity android:name=".WebViewActivity" />
         <activity
-            android:name=".TimelineActivity"
-            android:label="@string/title_activity_timeline"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".DraftActivity"
             android:label="@string/title_activity_draft"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TimelineActivity"
+            android:label="@string/title_activity_timeline"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
