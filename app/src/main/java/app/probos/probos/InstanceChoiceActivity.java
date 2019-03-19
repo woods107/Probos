@@ -1,5 +1,6 @@
 package app.probos.probos;
 
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -38,6 +40,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.MastodonRequest;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.Range;
+import com.sys1yagi.mastodon4j.api.entity.Notification;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Notifications;
+
 
 
 import com.google.gson.Gson;
@@ -570,6 +581,8 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             authCode = uri.getQueryParameter("code");
         }
     }
+
+
 
 
 }

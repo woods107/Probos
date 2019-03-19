@@ -52,7 +52,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageButton boostButton;
-
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
         public ViewHolder(View itemView) {
@@ -200,11 +199,11 @@ public class ProfileActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             if(relationship.isFollowing()){
-                                tmpAcct.postUnFollow(currAcct.getId());
+                                tmpAcct.postUnFollow(currAcct.getId()).execute();
                                 followButton.setImageResource(android.R.drawable.ic_menu_rotate);
                                 //add turning button on/off
                             }else{
-                                tmpAcct.postFollow(currAcct.getId());
+                                tmpAcct.postFollow(currAcct.getId()).execute();
                                 followButton.setImageResource(android.R.drawable.checkbox_on_background);
                             }
                         }catch (Exception e) {
