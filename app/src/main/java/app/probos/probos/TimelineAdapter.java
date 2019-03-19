@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
+import com.sys1yagi.mastodon4j.api.entity.Attachment;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.method.Public;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
@@ -99,6 +100,11 @@ public class TimelineAdapter extends
                 try {
                     for (int i = 0; i < statuses.size(); i++) {
                         URL newurl = new URL(statuses.get(i).getAccount().getAvatar());
+
+                        URL contentURL[];
+                        List<Attachment> media = statuses.get(i).getMediaAttachments();
+                        if (media.size() != 0); // TODO Actually do something here
+
                         Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                         profilePictures.add(ppBitmap);
                         isFavoritedList.add(statuses.get(i).isFavourited());
