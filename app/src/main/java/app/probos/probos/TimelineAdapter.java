@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -27,6 +28,8 @@ import com.sys1yagi.mastodon4j.api.method.Public;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Timelines;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,6 +59,7 @@ public class TimelineAdapter extends
         public TextView messageUser;
         public TextView messageMessage;
         public CircleImageView profilePicture;
+        public ImageView mediaView1;
         public TextView messageFullUser;
         public TextView messageTime;
         public ImageButton favoriteButton;
@@ -80,12 +84,14 @@ public class TimelineAdapter extends
             boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
             moreButton = (Button) itemView.findViewById(R.id.more_button);
             replyButton = (ImageButton) itemView.findViewById(R.id.reply_button);
+            mediaView1 = (ImageView) itemView.findViewById(R.id.mediaView1);
         }
     }
 
     private List<Status> mStatuses;
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
+    private ArrayList<ArrayList<Bitmap>> mediaLists = new ArrayList<>();
 
 
 
@@ -101,14 +107,30 @@ public class TimelineAdapter extends
                     for (int i = 0; i < statuses.size(); i++) {
                         URL newurl = new URL(statuses.get(i).getAccount().getAvatar());
 
-                        URL contentURL[];
                         List<Attachment> media = statuses.get(i).getMediaAttachments();
-                        if (media.size() != 0); // TODO Actually do something here
+                        ArrayList<Bitmap> imgs = new ArrayList<>();
+
+                        for (int j = 0; j < media.size(); j++) {
+
+                            URL imgURL;
+                            try {
+                                if (media.get(j).getType().equals("image")) {
+                                    imgURL = new URL(media.get(j).getUrl());
+                                    Bitmap mediaBitmap = BitmapFactory.decodeStream(imgURL.openConnection().getInputStream());
+                                    imgs.add(mediaBitmap);
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }// End media for (j)
+
+                        mediaLists.add(imgs);
 
                         Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                         profilePictures.add(ppBitmap);
                         isFavoritedList.add(statuses.get(i).isFavourited());
-                    }
+                    }// End statuses for (i)
                 } catch (Exception e) {
                     //do nothing
                 }
@@ -146,7 +168,6 @@ public class TimelineAdapter extends
         Status status = mStatuses.get(position);
         Long id = status.getId();
 
-
         if (position == mStatuses.size()-1) {
             Thread olderRetrieval = new Thread(new Runnable() {
                 @Override
@@ -177,6 +198,28 @@ public class TimelineAdapter extends
 
                         for (int i = position+1; i < mStatuses.size(); i++) {
                             URL newurl = new URL(mStatuses.get(i).getAccount().getAvatar());
+
+                            List<Attachment> media = mStatuses.get(i).getMediaAttachments();
+                            ArrayList<Bitmap> imgs = new ArrayList<>();
+
+                            for (int j = 0; j < media.size(); j++) {
+
+                                URL imgURL;
+                                try {
+                                    if (media.get(j).getType().equals("image")) {
+                                        imgURL = new URL(media.get(j).getUrl());
+                                        Bitmap mediaBitmap = BitmapFactory.decodeStream(imgURL.openConnection().getInputStream());
+                                        imgs.add(mediaBitmap);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }// End media for (j)
+
+                            mediaLists.add(imgs);
+
+
                             Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                             profilePictures.add(ppBitmap);
                             isFavoritedList.add(mStatuses.get(i).isFavourited());
@@ -201,6 +244,8 @@ public class TimelineAdapter extends
 
         }// End position if
 
+
+
         // Set item views based on your views and data model
         TextView msgUserText = viewHolder.messageUser;
         String displayName = status.getAccount().getDisplayName();
@@ -220,6 +265,28 @@ public class TimelineAdapter extends
 
         TextView msgFullUserText = viewHolder.messageFullUser;
         msgFullUserText.setText("@" + status.getAccount().getAcct());
+
+
+        // TODO replace only having the one mediaView with up to 4, or video, or gifv
+        ImageView mediaView1 = viewHolder.mediaView1;
+        boolean display = false;
+        int size = mediaLists.get(position).size();
+        if (size == 0) { // Actually do something here
+            mediaView1.setMaxHeight(0);
+            mediaView1.setMaxWidth(0);
+            mediaView1.setVisibility(View.INVISIBLE);
+            display = true;
+        } else {
+            mediaView1.setImageBitmap(mediaLists.get(position).get(0));
+            mediaView1.setMaxHeight(mediaLists.get(position).get(0).getHeight());
+            mediaView1.setMaxWidth(mediaLists.get(position).get(0).getWidth());
+            mediaView1.setVisibility(View.VISIBLE);
+            display = true;
+        }// End contains media if
+
+
+
+        while (!display) { }
 
         TextView msgTimeText = viewHolder.messageTime;
         String rawTime = status.getCreatedAt();
