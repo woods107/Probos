@@ -272,18 +272,18 @@ public class TimelineAdapter extends
         boolean display = false;
         int size = mediaLists.get(position).size();
         if (size == 0) { // Actually do something here
-            mediaView1.setMaxHeight(0);
-            mediaView1.setMaxWidth(0);
+            mediaView1.getLayoutParams().height = 0;
+            mediaView1.getLayoutParams().width = 0;
             mediaView1.setVisibility(View.INVISIBLE);
             display = true;
         } else {
             mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-            mediaView1.setMaxHeight(mediaLists.get(position).get(0).getHeight());
-            mediaView1.setMaxWidth(mediaLists.get(position).get(0).getWidth());
+            mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
+            mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
             mediaView1.setVisibility(View.VISIBLE);
             display = true;
         }// End contains media if
-
+        mediaView1.requestLayout();
 
 
         while (!display) { }
