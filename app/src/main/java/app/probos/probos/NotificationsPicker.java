@@ -37,6 +37,7 @@ import com.sys1yagi.mastodon4j.api.method.Notifications;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Streaming;
 
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,9 @@ import android.app.Activity;
 
 public class NotificationsPicker extends AppCompatActivity {
 
+    static String instanceName;
+    static String accessTokenStr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,15 +58,57 @@ public class NotificationsPicker extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        Intent currIntent = getIntent();
+        instanceName = currIntent.getStringExtra("instancename");
+        accessTokenStr = currIntent.getStringExtra("accesstoken");
+
+        /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
+        });*/
+        MastodonClient client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson())
+                .accessToken(accessTokenStr)
+                .useStreamingApi()
+                .build();
+        Switch follow = findViewById(R.id.Follow);
+        follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
         });
+        Switch favorite = findViewById(R.id.Favorite);
+        favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        Switch mention = findViewById(R.id.Mention);
+        mention.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        Switch reblog = findViewById(R.id.Reblog);
+        reblog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Notification note = new Notification();
+                
 
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
 
 }
