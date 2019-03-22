@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -405,18 +406,19 @@ public class TimelineAdapter extends
            }
         });
         ImageButton muteButton = viewHolder.muteButton;
-
+        //Looper.prepare();
         muteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Thread mutePoss = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+                String[] muteSettings = {"Mute","Cancel"};
+                //Looper.prepare();
+
                         try {
 
-                            String[] muteSettings = {"Mute","Cancel"};
-                                AlertDialog.Builder muteMenu = new AlertDialog.Builder(view.getContext());
+
+                            AlertDialog.Builder muteMenu = new AlertDialog.Builder(view.getContext());
                             muteMenu.setTitle("Are you sure you would like to mute this user? This cannot be undone.");
+                            //Looper.prepare();
                             muteMenu.setItems(muteSettings, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -424,12 +426,18 @@ public class TimelineAdapter extends
                                     switch (which) {
                                         case 0:
                                             //mute
-                                            try {
-                                                accountsAPI.postMute(status.getAccount().getId()).execute();
-                                            }catch(Exception e){
-                                                //do nothing or freak out, depending on the mood
-                                                e.printStackTrace();
-                                            }
+                                            Thread mutePoss = new Thread(new Runnable() {
+                                                                @Override
+                                                               public void run() {
+                                                                        try {
+                                                                            accountsAPI.postMute(status.getAccount().getId()).execute();
+                                                                        }catch(Exception e){
+                                                                            //do nothing or freak out, depending on the mood
+                                                                            e.printStackTrace();
+                                                                        }
+                                                                }
+                                            });
+                                            mutePoss.start();
                                             break;
                                         case 1:
                                             //do nothing
@@ -446,9 +454,7 @@ public class TimelineAdapter extends
                         }catch (Exception e) {
                             e.printStackTrace();
                         }
-                    }
-                });
-                mutePoss.start();
+
 
             }
         });
