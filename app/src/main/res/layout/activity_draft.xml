@@ -45,15 +45,15 @@
     <!-- app:layout_ConstraintBottom_toTopOf="@+id/fab" -->
 
     <EditText
-        android:autofillHints="@string/title_activity_draft_message"
         android:id="@+id/draft_body"
-        android:layout_marginStart="3dp"
-        android:layout_marginTop="60dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="60dp"
+        android:autofillHints="@string/title_activity_draft_message"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="@string/title_activity_draft_message" />
+        android:hint="@string/title_activity_draft_message"
+        android:inputType="textPersonName" />
 
     <TextView
         android:id="@+id/message_recipient"
@@ -67,6 +67,16 @@
         android:text="@string/title_activity_draft_message"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/ic_menu_save"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="16dp"
         />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -80,6 +80,7 @@ public class TimelineActivity extends AppCompatActivity {
                 try {
                     draft.putExtra("instanceName",instanceName);
                     draft.putExtra("access",accessTokenStr);
+                    draft.putExtra("prevStatus","");
                     startActivity(draft);
 
                 } catch (Exception e) {
