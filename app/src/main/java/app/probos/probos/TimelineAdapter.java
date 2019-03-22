@@ -206,6 +206,8 @@ public class TimelineAdapter extends
                         for (int i = position+1; i < mStatuses.size(); i++) {
                             URL newurl = new URL(mStatuses.get(i).getAccount().getAvatar());
 
+                            displaying.add(!mStatuses.get(i).isSensitive());
+
                             List<Attachment> media = mStatuses.get(i).getMediaAttachments();
                             ArrayList<Bitmap> imgs = new ArrayList<>();
 
