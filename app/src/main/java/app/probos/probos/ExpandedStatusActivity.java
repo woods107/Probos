@@ -3,6 +3,7 @@ package app.probos.probos;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +40,9 @@ public class ExpandedStatusActivity extends AppCompatActivity {
 
     Status currStatus;
     Bitmap ppBitmap;
+
+    MastodonClient userClient;
+    Statuses tmpStats;
     //Bitmap bannerBitmap;
 
     /*
@@ -73,11 +77,11 @@ public class ExpandedStatusActivity extends AppCompatActivity {
         // Figure out how to set this up better
         //View rootView = getLayoutInflater().inflate
 
-        MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
-        Statuses tmpStats = new Statuses(userClient);
+        userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        tmpStats = new Statuses(userClient);
 
-
-        Thread infoRetrieval = new Thread(new Runnable() {
+        new setUpExpand().execute();
+       /* Thread infoRetrieval = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -96,64 +100,9 @@ public class ExpandedStatusActivity extends AppCompatActivity {
             infoRetrieval.join();
         } catch (Exception e) {
             //do nothing
-        }
-
-        TextView statusTextFull = findViewById(R.id.statusText);
-        String rawContent = currStatus.getContent();
-        statusTextFull.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
-
-        TextView displayName = findViewById(R.id.displayNameExp);
-        String displayNameText = currStatus.getAccount().getDisplayName();
-        if (!displayNameText.equals("")) {
-            displayName.setText(currStatus.getAccount().getDisplayName());
-        } else {
-            displayName.setText(currStatus.getAccount().getUserName());
-        }
-
-        TextView userName = findViewById(R.id.fullUserNameExp);
-        userName.setText("@" + currStatus.getAccount().getAcct());
-
-        TextView timeText = findViewById(R.id.msgTimeExp);
-        String rawTime = currStatus.getCreatedAt();
-        String time = rawTime.substring(0,10) + " " + rawTime.substring(12,19) + " UTC";
-        timeText.setText(time);
-
-        TextView reblogCount = findViewById(R.id.reblogs_count);
-        reblogCount.setText("Reblogs: " + currStatus.getReblogsCount());
-
-        TextView replyCount = findViewById(R.id.replies_count);
-        replyCount.setText("Replies: " + currStatus.getRepliesCount());
-
-        /*TextView replyCount = findViewById(R.id.reply_count);
-        replyCount.setText(String.valueOf(currStatus.getRepliesCount()));*/
+        }*/
 
 
-        CircleImageView imageView = findViewById(R.id.profile_full_picture_exp);
-        imageView.setImageBitmap(ppBitmap);
-        imageView.bringToFront();
-        imageView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                intent.putExtra("id", currStatus.getAccount().getId());
-                intent.putExtra("token", TimelineActivity.accessTokenStr);
-                intent.putExtra("name", TimelineActivity.instanceName);
-                // Need to add a Context/ContextWrapper startActivity statement here
-                try {
-                    v.getContext().startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }// End try/catch block
-            }
-        });
-
-        //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
-        //UserListAdapter userListAdapter = new UserListAdapter(accounts);
-        //userRecycler.setAdapter(userListAdapter);
-        //userRecycler.setLayoutManager(new LinearLayoutManager(this));
-        //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
-        //return rootView;
 
     }
     
@@ -167,6 +116,91 @@ public class ExpandedStatusActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+
+    }
+
+    private class setUpExpand extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... param) {
+            try {
+                try {
+                    currStatus = tmpStats.getStatus(statusId).execute();
+                    URL newPP = new URL(currStatus.getAccount().getAvatar());
+                    ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void param) {
+            TextView statusTextFull = findViewById(R.id.statusText);
+            String rawContent = currStatus.getContent();
+            statusTextFull.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
+
+            TextView displayName = findViewById(R.id.displayNameExp);
+            String displayNameText = currStatus.getAccount().getDisplayName();
+            if (!displayNameText.equals("")) {
+                displayName.setText(currStatus.getAccount().getDisplayName());
+            } else {
+                displayName.setText(currStatus.getAccount().getUserName());
+            }
+
+            TextView userName = findViewById(R.id.fullUserNameExp);
+            userName.setText("@" + currStatus.getAccount().getAcct());
+
+            TextView timeText = findViewById(R.id.msgTimeExp);
+            String rawTime = currStatus.getCreatedAt();
+            String time = rawTime.substring(0,10) + " " + rawTime.substring(12,19) + " UTC";
+            timeText.setText(time);
+
+            TextView reblogCount = findViewById(R.id.reblogs_count);
+            reblogCount.setText("Reblogs: " + currStatus.getReblogsCount());
+
+            TextView replyCount = findViewById(R.id.replies_count);
+            replyCount.setText("Replies: " + currStatus.getRepliesCount());
+
+        /*TextView replyCount = findViewById(R.id.reply_count);
+        replyCount.setText(String.valueOf(currStatus.getRepliesCount()));*/
+
+
+            CircleImageView imageView = findViewById(R.id.profile_full_picture_exp);
+            imageView.setImageBitmap(ppBitmap);
+            imageView.bringToFront();
+            imageView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                    intent.putExtra("id", currStatus.getAccount().getId());
+                    intent.putExtra("token", TimelineActivity.accessTokenStr);
+                    intent.putExtra("name", TimelineActivity.instanceName);
+                    // Need to add a Context/ContextWrapper startActivity statement here
+                    try {
+                        v.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }// End try/catch block
+                }
+            });
+
+            //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
+            //UserListAdapter userListAdapter = new UserListAdapter(accounts);
+            //userRecycler.setAdapter(userListAdapter);
+            //userRecycler.setLayoutManager(new LinearLayoutManager(this));
+            //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
+            //return rootView;
+        }
+
+        //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
+        //UserListAdapter userListAdapter = new UserListAdapter(accounts);
+        //userRecycler.setAdapter(userListAdapter);
+        //userRecycler.setLayoutManager(new LinearLayoutManager(this));
+        //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
+        //return rootView;
 
     }
 

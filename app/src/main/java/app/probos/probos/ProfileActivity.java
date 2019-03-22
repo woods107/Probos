@@ -131,6 +131,7 @@ public class ProfileActivity extends AppCompatActivity {
                     intent.putExtra("id", acctId);
                     intent.putExtra("token", TimelineActivity.accessTokenStr);
                     intent.putExtra("name", TimelineActivity.instanceName);
+                    intent.putExtra("toGet", 1);
                     // Need to add a Context/ContextWrapper startActivity statement here
                     try {
                         v.getContext().startActivity(intent);
@@ -142,6 +143,22 @@ public class ProfileActivity extends AppCompatActivity {
 
             TextView followingCount = findViewById(R.id.following_count);
             followingCount.setText(String.valueOf(currAcct.getFollowingCount()));
+            followingCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                    intent.putExtra("id", acctId);
+                    intent.putExtra("token", TimelineActivity.accessTokenStr);
+                    intent.putExtra("name", TimelineActivity.instanceName);
+                    intent.putExtra("toGet", 2);
+                    // Need to add a Context/ContextWrapper startActivity statement here
+                    try {
+                        v.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }// End try/catch block
+                }
+            });
 
             TextView profileBio = findViewById(R.id.profileBio);
             profileBio.setText(Html.fromHtml(currAcct.getNote(), Html.FROM_HTML_MODE_COMPACT));
