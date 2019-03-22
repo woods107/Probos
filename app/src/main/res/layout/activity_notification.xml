@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".NotificationsPicker">
+
+    <Switch
+        android:id="@+id/Mention"
+        android:layout_width="117dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="147dp"
+        android:layout_marginEnd="147dp"
+        android:text="Mention"
+        android:textColor="#777777"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Reblog" />
+
+    <Switch
+        android:id="@+id/Reblog"
+        android:layout_width="117dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="147dp"
+        android:layout_marginEnd="147dp"
+        android:text="Reblog"
+        android:textColor="#777777"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Favorite" />
+
+    <Switch
+        android:id="@+id/Follow"
+        android:layout_width="117dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="147dp"
+        android:layout_marginTop="122dp"
+        android:layout_marginEnd="147dp"
+        android:text="Follow"
+        android:textColor="#777777"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Switch
+        android:id="@+id/Favorite"
+        android:layout_width="117dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="147dp"
+        android:layout_marginEnd="147dp"
+        android:text="Favorite"
+        android:textColor="#777777"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Follow" />
+
+</android.support.constraint.ConstraintLayout>

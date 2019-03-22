@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,8 +19,17 @@ import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.entity.Relationship;
+import com.sys1yagi.mastodon4j.api.method.Follows;
+import com.sys1yagi.mastodon4j.api.method.FollowRequests;
+
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.OkHttpClient;
@@ -37,8 +48,8 @@ public class ProfileActivity extends AppCompatActivity {
     Account currAcct;
     Bitmap ppBitmap;
     Bitmap bannerBitmap;
-
-    Thread infoRetrieval;
+    Relationship relationship;
+    Boolean follow;
 
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
@@ -104,6 +115,10 @@ public class ProfileActivity extends AppCompatActivity {
                 URL newBanner = new URL(currAcct.getHeader());
                 ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
                 bannerBitmap = BitmapFactory.decodeStream(newBanner.openConnection().getInputStream());
+                ArrayList<Long> accounts = new ArrayList<>();
+                accounts.add(acctId);
+                relationship = tmpAcct.getRelationships(accounts).execute().get(0);
+                follow = relationship.isFollowing();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -185,7 +200,46 @@ public class ProfileActivity extends AppCompatActivity {
                     }// End try/catch block
                 }
             });
+            ImageButton followButton= findViewById(R.id.followButton);
+
+            if(follow) {
+                followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
+            }else{
+                followButton.setImageResource(android.R.drawable.ic_input_add);
+            }
+
+            followButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    Thread boostPoss = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if(follow){
+                                    tmpAcct.postUnFollow(currAcct.getId()).execute();
+                                    followButton.setImageResource(android.R.drawable.ic_input_add);
+                                    follow = false;
+                                    //add turning button on/off
+                                }else{
+                                    tmpAcct.postFollow(currAcct.getId()).execute();
+                                    followButton.setImageResource(android.R.drawable.checkbox_on_background);
+                                    follow = true;
+                                }
+                            }catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    boostPoss.start();
+                    try{
+                        boostPoss.join();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
+
 
         //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
         //UserListAdapter userListAdapter = new UserListAdapter(accounts);
