@@ -50,6 +50,7 @@ public class NotificationsPicker extends AppCompatActivity {
 
     static String instanceName;
     static String accessTokenStr;
+    long longid=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,13 @@ public class NotificationsPicker extends AppCompatActivity {
                 .accessToken(accessTokenStr)
                 .useStreamingApi()
                 .build();
+
+        Intent intent = getIntent();
+
+        if(intent.getLongExtra("id",0 )>0){
+            longid=intent.getLongExtra("id",0 );
+        }
+
         Switch follow = findViewById(R.id.Follow);
         follow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,9 +110,6 @@ public class NotificationsPicker extends AppCompatActivity {
         reblog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Notification note = new Notification();
-                
-
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
