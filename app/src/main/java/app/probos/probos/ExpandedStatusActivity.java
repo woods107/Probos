@@ -17,6 +17,7 @@ import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
+import com.sys1yagi.mastodon4j.api.method.Notifications;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 
 import org.w3c.dom.Text;

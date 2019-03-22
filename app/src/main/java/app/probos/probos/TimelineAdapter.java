@@ -85,6 +85,7 @@ public class TimelineAdapter extends
     private List<Status> mStatuses;
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
+    private ArrayList<Boolean> isBoostedList = new ArrayList<>();
 
 
 
@@ -102,6 +103,7 @@ public class TimelineAdapter extends
                         Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                         profilePictures.add(ppBitmap);
                         isFavoritedList.add(statuses.get(i).isFavourited());
+                        isBoostedList.add(statuses.get(i).isReblogged());
                     }
                 } catch (Exception e) {
                     //do nothing
@@ -174,6 +176,7 @@ public class TimelineAdapter extends
                             Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                             profilePictures.add(ppBitmap);
                             isFavoritedList.add(mStatuses.get(i).isFavourited());
+                            isBoostedList.add(mStatuses.get(i).isReblogged());
                         }
 
 
@@ -242,8 +245,10 @@ public class TimelineAdapter extends
         });
 
         ImageButton favoriteButton = viewHolder.favoriteButton;
-        if (status.isFavourited()) {
+        if (isFavoritedList.get(viewHolder.getAdapterPosition())) {
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
         }
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,8 +282,10 @@ public class TimelineAdapter extends
         });
 
         ImageButton boostButton = viewHolder.boostButton;
-        if(status.isReblogged()){
+        if(isBoostedList.get(viewHolder.getAdapterPosition())){
             boostButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
+        } else {
+            boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
         }
         boostButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -287,12 +294,14 @@ public class TimelineAdapter extends
                     @Override
                     public void run() {
                         try {
-                            if(status.isReblogged()){
+                            if(isBoostedList.get(viewHolder.getAdapterPosition())){
                                 statusesAPI.postUnreblog(id).execute();
+                                isBoostedList.set(viewHolder.getAdapterPosition(), false);
                                 boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
                                 //add turning button on/off
                             }else{
                                 statusesAPI.postReblog(id).execute();
+                                isBoostedList.set(viewHolder.getAdapterPosition(), true);
                                 boostButton.setImageResource(android.R.drawable.checkbox_on_background);
                             }
                         }catch (Exception e) {

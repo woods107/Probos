@@ -1,5 +1,6 @@
 package app.probos.probos;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,7 @@ public class Tab1Personal extends Fragment {
     String accessToken;
     RecyclerView personalRecycler;
     Timelines timelines;
+    boolean loaded = false;
 
     public void setInfo(String instanceName, String accessToken){
         this.accessToken = accessToken;
@@ -38,29 +40,25 @@ public class Tab1Personal extends Fragment {
     TimelineAdapter timelineAdapter;
     SwipeRefreshLayout swipeLayout;
 
-    public void grabTimeline() {
-        Thread timelineRetrieval = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Range range = new Range(null, null, 50);
-                    Pageable<Status> statuses = timelines.getHome(range).execute();
-                    statusList = statuses.getPart();
-                } catch (Exception e) {
-                    throw new IllegalArgumentException();
-                }
-                timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
-            }
-        });
+    private class grabTimeline extends AsyncTask<Void, Void, Void>{
 
-        timelineRetrieval.start();
-        try {
-            timelineRetrieval.join();
-        } catch (Exception e) {
-            //do nothing
+        protected Void doInBackground(Void... param) {
+            try {
+                Range range = new Range(null, null, 50);
+                Pageable<com.sys1yagi.mastodon4j.api.entity.Status> statuses = timelines.getHome(range).execute();
+                statusList = statuses.getPart();
+            } catch (Exception e) {
+                    throw new IllegalArgumentException();
+            }
+            timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
+            loaded = true;
+            return null;
         }
 
-
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            personalRecycler.setAdapter(timelineAdapter);
+        }
     }
 
     @Override
@@ -68,7 +66,7 @@ public class Tab1Personal extends Fragment {
         super.onCreate(savedInstanceState);
         MastodonClient authClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         timelines = new Timelines(authClient);
-        grabTimeline();
+        new grabTimeline().execute();
 
 
 
@@ -84,7 +82,7 @@ public class Tab1Personal extends Fragment {
             @Override
             public void onRefresh() {
                 // Your code here
-                grabTimeline();
+                new grabTimeline().execute();
                 personalRecycler.setAdapter(timelineAdapter);
                 // To keep animation for 4 seconds
                 new Handler().postDelayed(new Runnable() {
