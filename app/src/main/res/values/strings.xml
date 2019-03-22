@@ -27,5 +27,6 @@
     <string name="title_activity_expanded_status">ExpandedStatusActivity</string>
     <string name="title_activity_draft_message">DraftMessage</string>
     <string name="title_activity_draft2">DraftActivity2</string>
+    <string name="title_activity_notifications_picker">NotificationsPicker</string>
 
 </resources>

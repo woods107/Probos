@@ -41,13 +41,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.sys1yagi.mastodon4j.MastodonClient;
-import com.sys1yagi.mastodon4j.MastodonRequest;
-import com.sys1yagi.mastodon4j.api.Pageable;
-import com.sys1yagi.mastodon4j.api.Range;
-import com.sys1yagi.mastodon4j.api.entity.Notification;
-import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
-import com.sys1yagi.mastodon4j.api.method.Notifications;
+
 
 
 
