@@ -3,8 +3,12 @@ package app.probos.probos;
 import android.app.AlertDialog;
 import android.app.AlertDialog.*;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.net.Uri;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,13 +26,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.MastodonRequest;
+import com.sys1yagi.mastodon4j.api.entity.Attachment;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Media;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 
+import java.io.File;
+import java.lang.reflect.Array;
+import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,7 +51,10 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
 public class DraftActivity extends AppCompatActivity {
     MastodonClient client;
@@ -55,6 +68,10 @@ public class DraftActivity extends AppCompatActivity {
 
     String[] draftSettings = {"Save Draft", "Load Draft"};
     String[] draftSaveSettings = {"Draft 1", "Draft 2", "Draft 3"};
+
+    int counter = 0;
+    MultipartBody.Part attachments[] = new MultipartBody.Part[4];
+    public static final int REQUEST_GET_SINGLE_FILE = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,20 +105,32 @@ public class DraftActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Send message and back out of message screen
+                Media mediaPost = new Media(client);
                 Statuses postUse = new Statuses(client);
+                EditText draft_body = findViewById(R.id.draft_body);
+                ArrayList<Long> mediaIDs = new ArrayList<>();
 
                     Thread postThr = new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
+
+                                if (counter > 0) {
+                                    //TODO WHEN EXPANDED TO MORE THAN ONE ATTACHMENT ACTUALLY ITERATE
+                                    Attachment att = mediaPost.postMedia(attachments[0]).execute();
+                                    //Attachment attReq = att.execute();
+
+                                    mediaIDs.add(att.getId());
+                                }
+
                                 if(id != 0){
-                                    postUse.postStatus(draft_body.getText().toString(), id, null, false, null,visibility).execute();
+                                    postUse.postStatus(draft_body.getText().toString(), id, mediaIDs, false, null,visibility).execute();
                                 }else {
-                                    postUse.postStatus(draft_body.getText().toString(), null, null, false, null,visibility).execute();
+                                    postUse.postStatus(draft_body.getText().toString(), null, mediaIDs, false, null,visibility).execute();
                                 }
                             }catch(Exception e){
                                 //uhhhhhhhhhh
-                                int useless = 24;
+                                e.printStackTrace();
                             }
                         }
                     });
@@ -112,6 +141,7 @@ public class DraftActivity extends AppCompatActivity {
                         postThr.join();
                     } catch (Exception e) {
                         //literally do nothing plz
+                        e.printStackTrace();
                     }
 
 
@@ -153,7 +183,21 @@ public class DraftActivity extends AppCompatActivity {
                 });
                 settingsMenu.show();
             }
-        });
+        });// End privacy onClickListener
+
+
+
+        FloatingActionButton attach_media = findViewById(R.id.media_attachment);
+        attach_media.setOnClickListener(new View.OnClickListener() {
+
+            // Grab Files based on user selection in order to prepare to send them
+
+            public void onClick(View view) {
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_SINGLE_FILE);
 
         FloatingActionButton saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -264,6 +308,61 @@ public class DraftActivity extends AppCompatActivity {
         });
 
 
-    }
+            }
 
+
+
+        });//End onClickListener
+
+
+
+    }// End activity OnCreate
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+
+            if (resultCode == RESULT_OK) {
+                if (requestCode == REQUEST_GET_SINGLE_FILE) {
+
+                    Uri selectedImageUri = data.getData();
+
+
+                    String filePath = "";
+                    String fileId = DocumentsContract.getDocumentId(selectedImageUri);
+                    // Split at colon, use second item in the array
+                    String id = fileId.split(":")[1];
+                    String[] column = {MediaStore.Images.Media.DATA};
+                    String selector = MediaStore.Images.Media._ID + "=?";
+                    Cursor cursor = this.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            column, selector, new String[]{id}, null);
+                    int columnIndex = cursor.getColumnIndex(column[0]);
+                    if (cursor.moveToFirst()) {
+                        filePath = cursor.getString(columnIndex);
+                    }
+                    cursor.close();
+
+                    File f = new File(filePath);
+
+                    //TODO Use counter to store in correct attachments array spot, check if >=4
+
+
+                    MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
+                    //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
+
+
+
+                    attachments[0] = limb;
+                    if (counter == 0) { counter++; }
+
+
+                }// End requestCode check
+            }// End RESULT_OK if
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }//dear god
