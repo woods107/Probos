@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -58,7 +59,7 @@ public class TimelineAdapter extends
         public TextView messageTime;
         public ImageButton favoriteButton;
         public ImageButton boostButton;
-
+        public ImageButton replyButton;
         public Button moreButton;
 
 
@@ -77,6 +78,7 @@ public class TimelineAdapter extends
             favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
             boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
             moreButton = (Button) itemView.findViewById(R.id.more_button);
+            replyButton = (ImageButton) itemView.findViewById(R.id.reply_button);
         }
     }
 
@@ -306,6 +308,24 @@ public class TimelineAdapter extends
                 }*/
             }
         });
+
+        ImageButton replyButton = viewHolder.replyButton;
+        replyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent draft = new Intent(view.getContext(), DraftActivity.class);
+                try {
+                    draft.putExtra("instanceName",TimelineActivity.instanceName);
+                    draft.putExtra("access",TimelineActivity.accessTokenStr);
+                    draft.putExtra("replyID", status.getId());
+                    view.getContext().startActivity(draft);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
         Button moreBtn = viewHolder.moreButton;
         moreBtn.setOnClickListener(new View.OnClickListener() {
