@@ -211,31 +211,6 @@ public class DraftActivity extends AppCompatActivity {
 
                     Uri selectedImageUri = data.getData();
 
-                    //if (path != null) {
-                        //File f = new File(path);
-                        //selectedImageUri = Uri.fromFile(f);
-                    //}// End path exists if
-
-                    /*
-
-                    String actualMaybePath;
-                    Cursor cursor = null;
-                    try {
-                        String[] proj = { MediaStore.Images.Media.DATA };
-                        cursor = this.getContentResolver().query(selectedImageUri,  proj, null, null, null);
-                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                        cursor.moveToFirst();
-                        actualMaybePath = cursor.getString(column_index);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        actualMaybePath = "";
-                    } finally {
-                        if (cursor != null) {
-                            cursor.close();
-                        }
-                    }
-
-                    */
 
                     String filePath = "";
                     String fileId = DocumentsContract.getDocumentId(selectedImageUri);
@@ -255,10 +230,14 @@ public class DraftActivity extends AppCompatActivity {
 
                     //TODO Use counter to store in correct attachments array spot, check if >=4
 
-                    //MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), f));
-                    MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("multipart/form-data"), f));
+
+                    MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
+                    //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
+
+
+
                     attachments[0] = limb;
-                    if (counter==0) { counter++; }
+                    if (counter == 0) { counter++; }
 
 
                 }// End requestCode check

@@ -192,6 +192,7 @@ public class TimelineActivity extends AppCompatActivity {
 
             final EditText in = new EditText(this);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
+
             builder.setView(in);
 
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

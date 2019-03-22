@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Timelines;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -66,6 +68,7 @@ public class TimelineAdapter extends
         public ImageButton boostButton;
         public ImageButton replyButton;
         public Button moreButton;
+        public Button sensitiveButton;
 
 
         // We also create a constructor that accepts the entire item row
@@ -83,6 +86,7 @@ public class TimelineAdapter extends
             favoriteButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
             boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
             moreButton = (Button) itemView.findViewById(R.id.more_button);
+            sensitiveButton = (Button) itemView.findViewById(R.id.sensitive_button);
             replyButton = (ImageButton) itemView.findViewById(R.id.reply_button);
             mediaView1 = (ImageView) itemView.findViewById(R.id.mediaView1);
         }
@@ -92,6 +96,7 @@ public class TimelineAdapter extends
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
     private ArrayList<ArrayList<Bitmap>> mediaLists = new ArrayList<>();
+    private ArrayList<Boolean> displaying = new ArrayList<>();
 
 
 
@@ -106,6 +111,8 @@ public class TimelineAdapter extends
                 try {
                     for (int i = 0; i < statuses.size(); i++) {
                         URL newurl = new URL(statuses.get(i).getAccount().getAvatar());
+
+                        displaying.add(!statuses.get(i).isSensitive());
 
                         List<Attachment> media = statuses.get(i).getMediaAttachments();
                         ArrayList<Bitmap> imgs = new ArrayList<>();
@@ -242,7 +249,7 @@ public class TimelineAdapter extends
                 olderRetrieval.join();
             } catch (Exception e) { e.printStackTrace(); }
 
-        }// End position if
+        }// End position and older retrieval if
 
 
 
@@ -255,13 +262,18 @@ public class TimelineAdapter extends
             msgUserText.setText(status.getAccount().getUserName());
         }
 
+        //displaying.add(!status.isSensitive());
+
+        String rawContent;
         TextView msgMsgText = viewHolder.messageMessage;
-        String rawContent = status.getContent();
-        String content = "";
-        /*if (rawContent.length()>0) {
-             content = rawContent.substring(3, rawContent.length() - 4);
-        }*/
+        if (displaying.get(position)) {
+            rawContent = status.getContent();
+            msgMsgText.setTextColor(Color.WHITE);
+        } else { rawContent = status.getSpoilerText(); msgMsgText.setTextColor(Color.RED); }
+
         msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
+
+
 
         TextView msgFullUserText = viewHolder.messageFullUser;
         msgFullUserText.setText("@" + status.getAccount().getAcct());
@@ -271,7 +283,7 @@ public class TimelineAdapter extends
         ImageView mediaView1 = viewHolder.mediaView1;
         boolean display = false;
         int size = mediaLists.get(position).size();
-        if (size == 0) { // Actually do something here
+        if (!displaying.get(position) || size == 0) { // Actually do something here
             mediaView1.getLayoutParams().height = 0;
             mediaView1.getLayoutParams().width = 0;
             mediaView1.setVisibility(View.INVISIBLE);
@@ -414,6 +426,45 @@ public class TimelineAdapter extends
                 } catch (Exception e) {
                     e.printStackTrace();
                 }// End try/catch block
+            }
+        });
+
+
+        // If message marked as sensitive, replace msgMsgText with cw (or "sensitive" if none) and hide images, if any
+
+        Button sensititveBtn = viewHolder.sensitiveButton;
+        sensititveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //status.getSpoilerText(); // CW text
+                //status.getContent(); // Message text
+
+
+                String rawContent;
+                TextView msgMsgText = viewHolder.messageMessage;
+                if (displaying.get(position)) {
+                    rawContent = status.getContent();
+                    msgMsgText.setTextColor(Color.WHITE);
+                } else { rawContent = status.getSpoilerText(); msgMsgText.setTextColor(Color.RED); }
+                msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
+
+
+
+                int size = mediaLists.get(position).size();
+                if (!displaying.get(position) || size == 0) { // Actually do something here
+                    mediaView1.getLayoutParams().height = 0;
+                    mediaView1.getLayoutParams().width = 0;
+                    mediaView1.setVisibility(View.INVISIBLE);
+                } else {
+                    mediaView1.setImageBitmap(mediaLists.get(position).get(0));
+                    mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
+                    mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+                    mediaView1.setVisibility(View.VISIBLE);
+                }// End contains media if
+                mediaView1.requestLayout(); // .requestLayout()
+
+                displaying.set(position, !displaying.get(position));
+
             }
         });
 
