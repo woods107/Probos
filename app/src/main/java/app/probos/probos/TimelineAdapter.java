@@ -101,6 +101,7 @@ public class TimelineAdapter extends
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
     private ArrayList<Boolean> isAuthorOfPost = new ArrayList<>();
     private Account me;
+    private ArrayList<Boolean> isBoostedList = new ArrayList<>();
 
 
 
@@ -134,6 +135,7 @@ public class TimelineAdapter extends
                         profilePictures.add(ppBitmap);
                         isFavoritedList.add(statuses.get(i).isFavourited());
                         isAuthorOfPost.add(statuses.get(i).getAccount().getId() == me.getId());
+                        isBoostedList.add(statuses.get(i).isReblogged());
                     }
                 } catch (Exception e) {
                     //do nothing
@@ -152,9 +154,7 @@ public class TimelineAdapter extends
 
         getProfPics.start();
         try {
-
             getProfPics.join();
-
         } catch (Exception e) {
             //do nothing
         }
@@ -218,6 +218,7 @@ public class TimelineAdapter extends
                             profilePictures.add(ppBitmap);
                             isFavoritedList.add(mStatuses.get(i).isFavourited());
                             isAuthorOfPost.add(mStatuses.get(i).getAccount().getId() == me.getId());
+                            isBoostedList.add(mStatuses.get(i).isReblogged());
                         }
 
 
@@ -275,8 +276,8 @@ public class TimelineAdapter extends
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("id", status.getAccount().getId());
-                intent.putExtra("token", accessTokenStr);
-                intent.putExtra("name", instanceName);
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
                 // Need to add a Context/ContextWrapper startActivity statement here
                 try {
                     v.getContext().startActivity(intent);
@@ -287,8 +288,10 @@ public class TimelineAdapter extends
         });
 
         ImageButton favoriteButton = viewHolder.favoriteButton;
-        if (status.isFavourited()) {
+        if (isFavoritedList.get(viewHolder.getAdapterPosition())) {
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
         }
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -460,8 +463,10 @@ public class TimelineAdapter extends
         });
 
         ImageButton boostButton = viewHolder.boostButton;
-        if(status.isReblogged()){
+        if(isBoostedList.get(viewHolder.getAdapterPosition())){
             boostButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
+        } else {
+            boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
         }
         boostButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -470,12 +475,14 @@ public class TimelineAdapter extends
                     @Override
                     public void run() {
                         try {
-                            if(status.isReblogged()){
+                            if(isBoostedList.get(viewHolder.getAdapterPosition())){
                                 statusesAPI.postUnreblog(id).execute();
+                                isBoostedList.set(viewHolder.getAdapterPosition(), false);
                                 boostButton.setImageResource(android.R.drawable.ic_menu_rotate);
                                 //add turning button on/off
                             }else{
                                 statusesAPI.postReblog(id).execute();
+                                isBoostedList.set(viewHolder.getAdapterPosition(), true);
                                 boostButton.setImageResource(android.R.drawable.checkbox_on_background);
                             }
                         }catch (Exception e) {
@@ -498,8 +505,8 @@ public class TimelineAdapter extends
             public void onClick(View view) {
                 Intent draft = new Intent(view.getContext(), DraftActivity.class);
                 try {
-                    draft.putExtra("instanceName", instanceName);
-                    draft.putExtra("access", accessTokenStr);
+                    draft.putExtra("instanceName",TimelineActivity.instanceName);
+                    draft.putExtra("access",TimelineActivity.accessTokenStr);
                     draft.putExtra("replyID", status.getId());
                     view.getContext().startActivity(draft);
 
@@ -516,8 +523,8 @@ public class TimelineAdapter extends
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ExpandedStatusActivity.class);
                 intent.putExtra("id", status.getId());
-                intent.putExtra("token", accessTokenStr);
-                intent.putExtra("name", instanceName);
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
                 // Need to add a Context/ContextWrapper startActivity statement here
                 try {
                     v.getContext().startActivity(intent);

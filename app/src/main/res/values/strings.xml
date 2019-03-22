@@ -29,4 +29,6 @@
     <string name="title_activity_draft2">DraftActivity2</string>
     <!--DANIELS TEST STRING-->
     <string name="draft_message">default</string>
+    <string name="title_activity_notifications_picker">NotificationsPicker</string>
+
 </resources>

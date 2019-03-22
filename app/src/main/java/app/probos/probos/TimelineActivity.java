@@ -1,10 +1,12 @@
 package app.probos.probos;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +23,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.MastodonRequest;
+import com.sys1yagi.mastodon4j.api.Handler;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.Range;
+import com.sys1yagi.mastodon4j.api.Shutdownable;
+import com.sys1yagi.mastodon4j.api.entity.Notification;
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Notifications;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.method.Streaming;
+
 import android.widget.TextView;
+
+import org.jetbrains.annotations.NotNull;
+
+import okhttp3.OkHttpClient;
 
 public class TimelineActivity extends AppCompatActivity {
 
@@ -93,6 +113,42 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
+        //MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        //Notifications tmpNotification = new Notifications(userClient);
+
+
+        MastodonClient client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson())
+                .accessToken(accessTokenStr)
+                .useStreamingApi()
+                .build();
+        Handler handler = new Handler() {
+            @Override
+            public void onStatus(@NotNull Status status) {
+                System.out.println(status.getContent());
+            }
+
+            @Override
+            public void onNotification(@NotNull Notification notification) {/* no op */
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(TimelineActivity.this, "probos")
+                        .setSmallIcon(R.drawable.class.getModifiers())
+                        .setContentTitle("Probos")
+                        .setContentText("do this work?")
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            }
+            @Override
+            public void onDelete(long id) {/* no op */}
+        };
+
+        Streaming streaming = new Streaming(client);
+        try {
+            Shutdownable shutdownable = streaming.localPublic(handler);
+            Thread.sleep(10000L);
+            shutdownable.shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -125,6 +181,16 @@ public class TimelineActivity extends AppCompatActivity {
                 throw new IllegalArgumentException();
             }
             return true;
+        }else if(id ==R.id.notifications) {
+            try {
+                Intent intent = new Intent(this, NotificationsPicker.class);
+                startActivity(intent);
+                finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -182,5 +248,7 @@ public class TimelineActivity extends AppCompatActivity {
             }
         }
     }
+
+
 
 }
