@@ -1,11 +1,15 @@
 package app.probos.probos;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.os.AsyncTask;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -21,7 +25,9 @@ import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
+import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.Accounts;
 import com.sys1yagi.mastodon4j.api.method.Public;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Timelines;
@@ -41,11 +47,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import okhttp3.OkHttpClient;
 
+import static app.probos.probos.TimelineActivity.accessTokenStr;
+import static app.probos.probos.TimelineActivity.instanceName;
+
 public class TimelineAdapter extends
         RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
 
     MastodonClient client;
     Statuses statusesAPI;
+    Accounts accountsAPI;
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -60,7 +70,9 @@ public class TimelineAdapter extends
         public ImageButton favoriteButton;
         public ImageButton boostButton;
         public ImageButton replyButton;
+        public ImageButton deleteButton;
         public Button moreButton;
+        public ImageButton muteButton;
 
 
         // We also create a constructor that accepts the entire item row
@@ -79,12 +91,16 @@ public class TimelineAdapter extends
             boostButton = (ImageButton) itemView.findViewById(R.id.boost_button);
             moreButton = (Button) itemView.findViewById(R.id.more_button);
             replyButton = (ImageButton) itemView.findViewById(R.id.reply_button);
+            deleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
+            muteButton = (ImageButton) itemView.findViewById(R.id.mute_button);
         }
     }
 
     private List<Status> mStatuses;
     private ArrayList<Bitmap> profilePictures = new ArrayList<>();
     private ArrayList<Boolean> isFavoritedList = new ArrayList<>();
+    private ArrayList<Boolean> isAuthorOfPost = new ArrayList<>();
+    private Account me;
     private ArrayList<Boolean> isBoostedList = new ArrayList<>();
 
 
@@ -94,6 +110,21 @@ public class TimelineAdapter extends
         mStatuses = statuses;
         client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         statusesAPI = new Statuses(client);
+        accountsAPI = new Accounts(client);
+        Thread getAcct = new Thread(new Runnable(){
+           @Override
+            public void run(){
+               try {
+                   me = accountsAPI.getVerifyCredentials().execute();
+               } catch (Exception e) {
+                   //do nothing
+                   e.printStackTrace();
+                   System.out.println("hey it throws an error");
+               }
+           }
+
+
+        });
         Thread getProfPics = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -103,13 +134,23 @@ public class TimelineAdapter extends
                         Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                         profilePictures.add(ppBitmap);
                         isFavoritedList.add(statuses.get(i).isFavourited());
+                        isAuthorOfPost.add(statuses.get(i).getAccount().getId() == me.getId());
                         isBoostedList.add(statuses.get(i).isReblogged());
                     }
                 } catch (Exception e) {
                     //do nothing
+                    System.out.println("here");
                 }
             }
         });
+
+
+        getAcct.start();
+        try{
+            getAcct.join();
+        }catch(Exception e){
+            int useless = 24;
+        }
 
         getProfPics.start();
         try {
@@ -176,6 +217,7 @@ public class TimelineAdapter extends
                             Bitmap ppBitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
                             profilePictures.add(ppBitmap);
                             isFavoritedList.add(mStatuses.get(i).isFavourited());
+                            isAuthorOfPost.add(mStatuses.get(i).getAccount().getId() == me.getId());
                             isBoostedList.add(mStatuses.get(i).isReblogged());
                         }
 
@@ -183,6 +225,7 @@ public class TimelineAdapter extends
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        System.out.println("or here?");
                     }
 
                     //System.out.println(mStatuses.size());
@@ -280,6 +323,144 @@ public class TimelineAdapter extends
                 }??*/
             }
         });
+        ImageButton deleteButton = viewHolder.deleteButton;
+
+        if(position < isAuthorOfPost.size() && isAuthorOfPost.get(viewHolder.getAdapterPosition())){
+            //show delete button
+            deleteButton.setVisibility(View.VISIBLE);
+
+        }else{
+            deleteButton.setVisibility(View.INVISIBLE);
+        }
+
+        deleteButton.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View view){
+               String[] settings = {"Delete","Delete and Redraft"};
+               try {
+                   //do delete button tree
+                   AlertDialog.Builder settingsMenu = new AlertDialog.Builder(view.getContext());
+                   settingsMenu.setTitle("Press back to cancel");
+                   settingsMenu.setItems(settings, new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           // the user clicked on colors[which]
+                           switch (which) {
+                               case 0:
+                                   //delete
+                                   AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+                                   alert.setTitle("Delete entry");
+                                   alert.setMessage("Are you sure you want to delete?");
+                                   alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                       public void onClick(DialogInterface dialog, int which) {
+                                           // continue with delete
+                                            try{
+                                                new sendDelete(id).execute();
+                                            }catch (Exception e){
+                                                //do nothing
+                                                int useless = 25;
+                                            }
+                                       }
+                                   });
+                                   alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                       public void onClick(DialogInterface dialog, int which) {
+                                           // close dialog
+                                           dialog.cancel();
+                                       }
+                                   });
+                                   alert.show();
+                                   break;
+                               case 1:
+                                   //delete and redraft
+                                   //System.out.println("A weapon to surpass metal gear");
+                                   String prevStatus = msgMsgText.getText().toString();
+                                   Intent draft = new Intent(view.getContext() , DraftActivity.class);
+                                   try {
+                                       draft.putExtra("instanceName",instanceName);
+                                       draft.putExtra("access",accessTokenStr);
+                                       draft.putExtra("prevStatus",prevStatus);
+
+                                       view.getContext().startActivity(draft);
+                                       //TODO: This is the temporary placement of delete for Sprint 2. This does not cover the case where they select delete and redraft and back out of the activity
+                                       try{
+                                           new sendDelete(id).execute();
+                                       }catch (Exception e){
+                                           //do nothing
+                                           int useless = 25;
+                                       }
+                                   } catch (Exception e) {
+                                       e.printStackTrace();
+                                   }
+                                   //take the contents of this status and hand it off into the text field of draft
+
+                                   break;
+                               default:
+                                   break;
+                           }
+
+                       }
+                   });
+                   settingsMenu.show();
+               }catch(Exception e){
+                   //uhhhhhhhhhh
+                   int useless = 24;
+               }
+           }
+        });
+        ImageButton muteButton = viewHolder.muteButton;
+        //Looper.prepare();
+        muteButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                String[] muteSettings = {"Mute","Cancel"};
+                //Looper.prepare();
+
+                        try {
+
+
+                            AlertDialog.Builder muteMenu = new AlertDialog.Builder(view.getContext());
+                            muteMenu.setTitle("Are you sure you would like to mute this user? This cannot be undone.");
+                            //Looper.prepare();
+                            muteMenu.setItems(muteSettings, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // the user clicked on colors[which]
+                                    switch (which) {
+                                        case 0:
+                                            //mute
+                                            Thread mutePoss = new Thread(new Runnable() {
+                                                                @Override
+                                                               public void run() {
+                                                                        try {
+                                                                            accountsAPI.postMute(status.getAccount().getId()).execute();
+                                                                        }catch(Exception e){
+                                                                            //do nothing or freak out, depending on the mood
+                                                                            e.printStackTrace();
+                                                                        }
+                                                                }
+                                            });
+                                            mutePoss.start();
+                                            break;
+                                        case 1:
+                                            //do nothing
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
+                                }
+                            });
+                            muteMenu.show();
+                                //add turning button on/off
+
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+            }
+        });
 
         ImageButton boostButton = viewHolder.boostButton;
         if(isBoostedList.get(viewHolder.getAdapterPosition())){
@@ -373,5 +554,27 @@ public class TimelineAdapter extends
         Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s);
         calendar.setTime(date);
         return calendar;
+    }
+    private class sendDelete extends AsyncTask<Void, Void, Void>
+    {
+        Long id;
+
+        public sendDelete(Long id) {
+            this.id = id;
+        }
+
+        protected Void doInBackground(Void... param) {
+            try {
+                statusesAPI.deleteStatus(id);
+            } catch (Exception e){
+                throw new IllegalArgumentException();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+        }
     }
 }

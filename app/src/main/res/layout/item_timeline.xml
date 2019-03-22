@@ -132,5 +132,28 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="23dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:visibility="invisible"
+            app:layout_constraintLeft_toRightOf="@id/reply_button"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
+
+        <ImageButton
+            android:id="@+id/mute_button"
+            android:layout_width="23dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            app:srcCompat="@android:drawable/stat_notify_call_mute"
+            app:layout_constraintRight_toLeftOf="@id/favorite_button"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime" />
+
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
