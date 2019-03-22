@@ -3,6 +3,7 @@ package app.probos.probos;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,9 +33,12 @@ public class ProfileActivity extends AppCompatActivity {
     String accessToken;
     Long acctId;
 
+    Accounts tmpAcct;
     Account currAcct;
     Bitmap ppBitmap;
     Bitmap bannerBitmap;
+
+    Thread infoRetrieval;
 
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
@@ -63,15 +67,15 @@ public class ProfileActivity extends AppCompatActivity {
         accessToken = currIntent.getStringExtra("token");
 
         // Begin instantiating the userRecycler
-       // userRecycler = findViewById(R.id.user_recycler);
+        // userRecycler = findViewById(R.id.user_recycler);
 
         // Figure out how to set this up better
         //View rootView = getLayoutInflater().inflate
 
         MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
-        Accounts tmpAcct = new Accounts(userClient);
+        tmpAcct = new Accounts(userClient);
 
-        Thread infoRetrieval = new Thread(new Runnable() {
+       /* infoRetrieval = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -86,71 +90,102 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        infoRetrieval.start();
+        infoRetrieval.start();*/
+        new setUpViews().execute();
 
-        try {
-            infoRetrieval.join();
-        } catch (Exception e) {
-            //do nothing
+    }
+
+    private class setUpViews extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... param) {
+            try {
+                currAcct = tmpAcct.getAccount(acctId).execute();
+                URL newPP = new URL(currAcct.getAvatar());
+                URL newBanner = new URL(currAcct.getHeader());
+                ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
+                bannerBitmap = BitmapFactory.decodeStream(newBanner.openConnection().getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
-        TextView displayName = findViewById(R.id.displayName);
-        String displayNameText = currAcct.getDisplayName();
-        if (!displayNameText.equals("")) {
-            displayName.setText(currAcct.getDisplayName());
-        } else {
-            displayName.setText(currAcct.getUserName());
+        protected void onPostExecute(Void param) {
+            TextView displayName = findViewById(R.id.displayName);
+            String displayNameText = currAcct.getDisplayName();
+            if (!displayNameText.equals("")) {
+                displayName.setText(currAcct.getDisplayName());
+            } else {
+                displayName.setText(currAcct.getUserName());
+            }
+
+            TextView userName = findViewById(R.id.fullUserName);
+            userName.setText("@" + currAcct.getAcct());
+
+            TextView followersCount = findViewById(R.id.followers_count);
+            followersCount.setText(String.valueOf(currAcct.getFollowersCount()));
+            followersCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                    intent.putExtra("id", acctId);
+                    intent.putExtra("token", TimelineActivity.accessTokenStr);
+                    intent.putExtra("name", TimelineActivity.instanceName);
+                    intent.putExtra("toGet", 1);
+                    // Need to add a Context/ContextWrapper startActivity statement here
+                    try {
+                        v.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }// End try/catch block
+                }
+            });
+
+            TextView followingCount = findViewById(R.id.following_count);
+            followingCount.setText(String.valueOf(currAcct.getFollowingCount()));
+            followingCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                    intent.putExtra("id", acctId);
+                    intent.putExtra("token", TimelineActivity.accessTokenStr);
+                    intent.putExtra("name", TimelineActivity.instanceName);
+                    intent.putExtra("toGet", 2);
+                    // Need to add a Context/ContextWrapper startActivity statement here
+                    try {
+                        v.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }// End try/catch block
+                }
+            });
+
+            TextView profileBio = findViewById(R.id.profileBio);
+            profileBio.setText(Html.fromHtml(currAcct.getNote(), Html.FROM_HTML_MODE_COMPACT));
+
+            ImageView profBanner = findViewById(R.id.profile_banner);
+            profBanner.setImageBitmap(bannerBitmap);
+
+            CircleImageView imageView = findViewById(R.id.profile_full_picture);
+            imageView.setImageBitmap(ppBitmap);
+            imageView.bringToFront();
+            imageView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                    intent.putExtra("id", acctId);
+                    intent.putExtra("token", TimelineActivity.accessTokenStr);
+                    intent.putExtra("name", TimelineActivity.instanceName);
+                    // Need to add a Context/ContextWrapper startActivity statement here
+                    try {
+                        v.getContext().startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }// End try/catch block
+                }
+            });
         }
-
-        TextView userName = findViewById(R.id.fullUserName);
-        userName.setText("@" + currAcct.getAcct());
-
-        TextView followersCount = findViewById(R.id.followers_count);
-        followersCount.setText(String.valueOf(currAcct.getFollowersCount()));
-        followersCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), UserListActivity.class);
-                intent.putExtra("id", acctId);
-                intent.putExtra("token", TimelineActivity.accessTokenStr);
-                intent.putExtra("name", TimelineActivity.instanceName);
-                // Need to add a Context/ContextWrapper startActivity statement here
-                try {
-                    v.getContext().startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }// End try/catch block
-            }
-        });
-
-        TextView followingCount = findViewById(R.id.following_count);
-        followingCount.setText(String.valueOf(currAcct.getFollowingCount()));
-
-        TextView profileBio = findViewById(R.id.profileBio);
-        profileBio.setText(Html.fromHtml(currAcct.getNote(), Html.FROM_HTML_MODE_COMPACT));
-
-        ImageView profBanner = findViewById(R.id.profile_banner);
-        profBanner.setImageBitmap(bannerBitmap);
-
-        CircleImageView imageView = findViewById(R.id.profile_full_picture);
-        imageView.setImageBitmap(ppBitmap);
-        imageView.bringToFront();
-        imageView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                intent.putExtra("id", acctId);
-                intent.putExtra("token", TimelineActivity.accessTokenStr);
-                intent.putExtra("name", TimelineActivity.instanceName);
-                // Need to add a Context/ContextWrapper startActivity statement here
-                try {
-                    v.getContext().startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }// End try/catch block
-            }
-        });
 
         //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
         //UserListAdapter userListAdapter = new UserListAdapter(accounts);
@@ -160,7 +195,7 @@ public class ProfileActivity extends AppCompatActivity {
         //return rootView;
 
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
