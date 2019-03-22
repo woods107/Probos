@@ -17,4 +17,9 @@
         android:orderInCategory="100"
         android:title="Update Bio"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/notifications"
+        android:orderInCategory="100"
+        android:title="Notifications"
+        app:showAsAction="never" />
 </menu>

@@ -5,6 +5,7 @@ import android.app.AlertDialog.*;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
@@ -60,9 +61,13 @@ public class DraftActivity extends AppCompatActivity {
     boolean isReply = false;
     long id = 0;
 
+
     //set visibility variable
     String[] settings = {"Public","Direct","Private","Unlisted"};
     Status.Visibility visibility = Status.Visibility.Public;
+
+    String[] draftSettings = {"Save Draft", "Load Draft"};
+    String[] draftSaveSettings = {"Draft 1", "Draft 2", "Draft 3"};
 
     int counter = 0;
     MultipartBody.Part attachments[] = new MultipartBody.Part[4];
@@ -73,6 +78,8 @@ public class DraftActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         client = new MastodonClient.Builder(intent.getStringExtra("instanceName"), new OkHttpClient.Builder(), new Gson()).accessToken(intent.getStringExtra("access")).build();
+        String prevStatus = intent.getStringExtra("prevStatus");
+
 
 
         if(intent.getLongExtra("replyID",0)>0){
@@ -88,7 +95,10 @@ public class DraftActivity extends AppCompatActivity {
 /*        //set visibility variable
         String[] settings = {"visible","private","test","DanielSmeels"};
         Status.Visibility visibility = Status.Visibility.Public;
-*/
+*/      EditText draft_body = findViewById(R.id.draft_body);
+        if(!prevStatus.equals("")){
+            draft_body.setText(prevStatus);
+        }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
 
@@ -137,8 +147,7 @@ public class DraftActivity extends AppCompatActivity {
 
                 //client.post();
                 finish();
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+
             }
         });
 
@@ -189,6 +198,115 @@ public class DraftActivity extends AppCompatActivity {
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_SINGLE_FILE);
+
+        FloatingActionButton saveButton = findViewById(R.id.save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            //do stuff for privacy settings
+
+            public void onClick(View view) {
+                AlertDialog.Builder saveButtonMenu = new AlertDialog.Builder(DraftActivity.this);
+                saveButtonMenu.setTitle("Choose whether to save or load a draft");
+                saveButtonMenu.setItems(draftSettings, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // the user clicked on colors[which]
+                        switch (which) {
+                            case 0:
+                                //Save Draft
+                                AlertDialog.Builder saveDraftMenu = new AlertDialog.Builder(DraftActivity.this);
+                                saveDraftMenu.setTitle("Choose which slot to save your current draft");
+                                saveDraftMenu.setItems(draftSaveSettings, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // the user clicked on colors[which]
+                                        switch (which) {
+                                            case 0:
+                                                //Draft Slot 1
+
+                                                //save current draft_body into sharedpreferences draft1
+                                                SharedPreferences draft1 = getSharedPreferences("draft1",MODE_PRIVATE);
+                                                SharedPreferences.Editor draft1edit = draft1.edit();
+                                                draft1edit.putString("message",draft_body.getText().toString());
+                                                draft1edit.commit();
+                                                //draft_body.setText(draft1.getString("message","default draft 1"));
+                                                break;
+                                            case 1:
+                                                //Draft Slot 2
+                                                SharedPreferences draft2 = getSharedPreferences("draft2",MODE_PRIVATE);
+                                                SharedPreferences.Editor draft2edit = draft2.edit();
+                                                draft2edit.putString("message",draft_body.getText().toString());
+                                                draft2edit.commit();
+                                                //save current draft_body into sharedpreference draft2
+
+                                                break;
+                                            case 2:
+                                                //Draft Slot 3
+                                                SharedPreferences draft3 = getSharedPreferences("draft3",MODE_PRIVATE);
+                                                SharedPreferences.Editor draft3edit = draft3.edit();
+                                                draft3edit.putString("message",draft_body.getText().toString());
+                                                draft3edit.commit();
+                                                //save current draft_body into sharedpreferences draft3
+
+
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                    }
+                                });
+                                saveDraftMenu.show();
+
+                                break;
+                            case 1:
+                                //Load Draft
+                                AlertDialog.Builder loadDraftMenu = new AlertDialog.Builder(DraftActivity.this);
+                                loadDraftMenu.setTitle("Choose which slot from which to load draft");
+                                loadDraftMenu.setItems(draftSaveSettings, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // the user clicked on colors[which]
+                                        switch (which) {
+                                            case 0:
+                                                //Draft Slot 1
+
+                                                //pull from sharedpreferences draft1 into draft_body
+                                                SharedPreferences draft1 = getSharedPreferences("draft1",MODE_PRIVATE);
+                                                draft_body.setText(draft1.getString("message","default draft 1"));
+                                                break;
+                                            case 1:
+                                                //Draft Slot 2
+
+                                                //pull from sharedpreference draft2 into draft_body
+                                                SharedPreferences draft2 = getSharedPreferences("draft2",MODE_PRIVATE);
+                                                draft_body.setText(draft2.getString("message","default draft 2"));
+                                                break;
+                                            case 2:
+                                                //Draft Slot 3
+
+                                                //pull from sharedpreferences draft3 into draft_body
+                                                SharedPreferences draft3 = getSharedPreferences("draft3",MODE_PRIVATE);
+                                                draft_body.setText(draft3.getString("message","default draft 3"));
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                    }
+                                });
+                                loadDraftMenu.show();
+
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
+                });
+                saveButtonMenu.show();
+            }
+        });
+
 
             }
 
@@ -247,6 +365,4 @@ public class DraftActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
 }//dear god

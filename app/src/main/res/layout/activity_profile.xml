@@ -40,12 +40,11 @@
         app:layout_constraintTop_toBottomOf="@id/appbar"
         app:srcCompat="@color/colorAccent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_full_picture"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:layout_marginStart="0dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="@id/profile_banner" />
@@ -135,6 +134,15 @@
         app:layout_constraintEnd_toEndOf="@id/following_count"
         app:layout_constraintStart_toStartOf="@id/following_count"
         app:layout_constraintTop_toBottomOf="@id/following_count" />
+
+    <ImageButton
+        android:id="@+id/followButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/following"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 
 </android.support.constraint.ConstraintLayout>
