@@ -38,6 +38,7 @@ import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -101,6 +102,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     private View mProgressView;
     private View mLoginFormView;
     boolean signInSuccess = false;
+    boolean staySignedIn = false;
 
 
     AccessToken accessTokensaved;
@@ -143,6 +145,18 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 return false;
             }
         });*/
+
+        CheckBox StaySignedIn = (CheckBox) findViewById(R.id.checkBox);
+        StaySignedIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(staySignedIn==true){
+                    staySignedIn=false;
+                }else{
+                    staySignedIn=true;
+                }
+            }
+        });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.getauth_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -387,12 +401,15 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
         try {
             finalAuthThr.join();
-            SharedPreferences li=getSharedPreferences("Login", MODE_PRIVATE);
-            SharedPreferences.Editor Ed=li.edit();
 
-            Ed.putString("accessToken",accessToken.getAccessToken());
-            Ed.putString("instance", instanceName);
-            Ed.commit();
+            if(staySignedIn==true) {
+                SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
+                SharedPreferences.Editor Ed = li.edit();
+
+                Ed.putString("accessToken", accessToken.getAccessToken());
+                Ed.putString("instance", instanceName);
+                Ed.commit();
+            }
             Intent intent = new Intent(this, TimelineActivity.class);
             intent.putExtra("accesstoken", accessToken.getAccessToken());
             intent.putExtra("instancename",instanceName);
