@@ -156,7 +156,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                     staySignedIn=true;
                 }
             }
-        });
+        });//works as intended
 
         Button mEmailSignInButton = (Button) findViewById(R.id.getauth_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -164,6 +164,12 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             public void onClick(View view) {
                 if (attemptLogin()) {
                     AlertDialog.Builder builder;
+                    SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
+                    SharedPreferences.Editor Ed = li.edit();
+
+                    Ed.putString("accessToken", null);
+                    Ed.putString("instance", null);
+                    Ed.commit();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         builder = new AlertDialog.Builder(InstanceChoiceActivity.this, android.R.style.Theme_Material_Dialog_Alert);
                     } else {
@@ -408,6 +414,13 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
                 Ed.putString("accessToken", accessToken.getAccessToken());
                 Ed.putString("instance", instanceName);
+                Ed.commit();
+            }else{
+                SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
+                SharedPreferences.Editor Ed = li.edit();
+
+                Ed.putString("accessToken", null);
+                Ed.putString("instance", null);
                 Ed.commit();
             }
             Intent intent = new Intent(this, TimelineActivity.class);
