@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".ProfileActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/appbar_padding_top"
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/app_name">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ImageView
+        android:id="@+id/profile_banner"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"
+        android:tint="#AF000000"
+        app:layout_constraintTop_toBottomOf="@id/appbar"
+        app:srcCompat="@color/colorAccent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_full_picture"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/profile_banner" />
+
+    <TextView
+        android:id="@+id/fullUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="TextView"
+        android:textColor="#bbbbbb"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_banner"
+        app:layout_constraintTop_toBottomOf="@+id/displayName" />
+
+    <EditText
+        android:id="@+id/profileBioEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        android:text="TextView"
+        android:textColor="#dbdbdb"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_banner" />
+
+    <EditText
+        android:id="@+id/displayNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="TextView"
+        android:textColor="#dddddd"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/fullUserName"
+        app:layout_constraintTop_toBottomOf="@id/profile_full_picture" />
+
+
+</android.support.constraint.ConstraintLayout>
