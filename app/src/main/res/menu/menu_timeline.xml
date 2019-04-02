@@ -17,6 +17,10 @@
         android:orderInCategory="100"
         android:title="Update Bio"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_profile"
+        android:orderInCategory="100"
+        android:title="Your Profile"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/notifications"
         android:orderInCategory="100"

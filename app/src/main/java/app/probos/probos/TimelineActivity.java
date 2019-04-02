@@ -35,6 +35,7 @@ import com.sys1yagi.mastodon4j.api.Handler;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.Shutdownable;
+import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Notification;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
@@ -195,7 +196,8 @@ public class TimelineActivity extends AppCompatActivity {
                 throw new IllegalArgumentException();
             }
             return true;
-        }else if(id ==R.id.notifications) {
+        }
+        else if(id == R.id.notifications) {
             try {
                 Intent intent = new Intent(this, NotificationsPicker.class);
                 startActivity(intent);
@@ -205,6 +207,40 @@ public class TimelineActivity extends AppCompatActivity {
             }
             return true;
 
+        }
+        else if (id == R.id.action_profile) {
+            try {
+
+                Accounts acct = new Accounts(client);
+
+                Thread profileThr = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Account me = acct.getVerifyCredentials().execute();
+                            Intent intent = new Intent(TimelineActivity.this, ProfileActivity.class);
+                            intent.putExtra("id", me.getId());
+                            intent.putExtra("token", accessTokenStr);
+                            intent.putExtra("name", instanceName);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                profileThr.start();
+
+                try {
+                    profileThr.join();
+                } catch (Exception e) {
+                    //literally do nothing plz
+                    e.printStackTrace();
+                }
+
+
+            } catch (Exception e) { e.printStackTrace(); }
+            return true;
         }
         else if (id == R.id.action_displayName) {
 
