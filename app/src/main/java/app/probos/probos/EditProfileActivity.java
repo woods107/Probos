@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -64,6 +66,7 @@ public class EditProfileActivity extends AppCompatActivity {
         // This line here should enable a back button on the action bar
         // Once the UI is more developed, it will be useful to have
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Intent currIntent = getIntent();
         acctId = currIntent.getLongExtra("id", 0);
@@ -130,47 +133,6 @@ public class EditProfileActivity extends AppCompatActivity {
             TextView userName = findViewById(R.id.fullUserName);
             userName.setText("@" + currAcct.getAcct());
 
-            /*
-
-            TextView followersCount = findViewById(R.id.followers_count);
-            followersCount.setText(String.valueOf(currAcct.getFollowersCount()));
-            followersCount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), UserListActivity.class);
-                    intent.putExtra("id", acctId);
-                    intent.putExtra("token", TimelineActivity.accessTokenStr);
-                    intent.putExtra("name", TimelineActivity.instanceName);
-                    intent.putExtra("toGet", 1);
-                    // Need to add a Context/ContextWrapper startActivity statement here
-                    try {
-                        v.getContext().startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }// End try/catch block
-                }
-            });
-
-            TextView followingCount = findViewById(R.id.following_count);
-            followingCount.setText(String.valueOf(currAcct.getFollowingCount()));
-            followingCount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), UserListActivity.class);
-                    intent.putExtra("id", acctId);
-                    intent.putExtra("token", TimelineActivity.accessTokenStr);
-                    intent.putExtra("name", TimelineActivity.instanceName);
-                    intent.putExtra("toGet", 2);
-                    // Need to add a Context/ContextWrapper startActivity statement here
-                    try {
-                        v.getContext().startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }// End try/catch block
-                }
-            });
-
-            */
 
             EditText profileBio = findViewById(R.id.profileBioEditText);
             profileBio.setText(Html.fromHtml(currAcct.getNote(), Html.FROM_HTML_MODE_COMPACT));
@@ -182,75 +144,16 @@ public class EditProfileActivity extends AppCompatActivity {
             imageView.setImageBitmap(ppBitmap);
             imageView.bringToFront();
 
-            /*
-
-            imageView.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), EditProfileActivity.class);
-                    intent.putExtra("id", acctId);
-                    intent.putExtra("token", TimelineActivity.accessTokenStr);
-                    intent.putExtra("name", TimelineActivity.instanceName);
-                    // Need to add a Context/ContextWrapper startActivity statement here
-                    try {
-                        v.getContext().startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }// End try/catch block
-                }
-            });
-            ImageButton followButton= findViewById(R.id.followButton);
-
-            if(follow) {
-                followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
-            }else{
-                followButton.setImageResource(android.R.drawable.ic_input_add);
-            }
-
-            followButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view) {
-                    Thread boostPoss = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if(follow){
-                                    tmpAcct.postUnFollow(currAcct.getId()).execute();
-                                    followButton.setImageResource(android.R.drawable.ic_input_add);
-                                    follow = false;
-                                    //add turning button on/off
-                                }else{
-                                    tmpAcct.postFollow(currAcct.getId()).execute();
-                                    followButton.setImageResource(android.R.drawable.checkbox_on_background);
-                                    follow = true;
-                                }
-                            }catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    boostPoss.start();
-                    try{
-                        boostPoss.join();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-           */
 
         }
 
 
-        //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
-        //UserListAdapter userListAdapter = new UserListAdapter(accounts);
-        //userRecycler.setAdapter(userListAdapter);
-        //userRecycler.setLayoutManager(new LinearLayoutManager(this));
-        //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
-        //return rootView;
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_done, menu);
+        return true;
     }
 
     @Override
@@ -259,6 +162,35 @@ public class EditProfileActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.menu.menu_done:
+                // TODO bring the code in here from updating the bio and display name
+
+                EditText displayName = (EditText) findViewById(R.id.displayNameEditText);
+                EditText profileBio = (EditText) findViewById(R.id.profileBioEditText);
+
+                Thread profileThr = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, null).execute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                profileThr.start();
+
+                try {
+                    profileThr.join();
+                } catch (Exception e) {
+                    //literally do nothing plz
+                    e.printStackTrace();
+                }
+
+                onBackPressed();
+
                 return true;
         }
 
