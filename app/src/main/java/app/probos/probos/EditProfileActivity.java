@@ -164,7 +164,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.menu.menu_done:
-                // TODO bring the code in here from updating the bio and display name
 
                 EditText displayName = (EditText) findViewById(R.id.displayNameEditText);
                 EditText profileBio = (EditText) findViewById(R.id.profileBioEditText);
@@ -190,9 +189,9 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
 
                 onBackPressed();
-
                 return true;
-        }
+
+        }// End switch
 
         return super.onOptionsItemSelected(item);
 

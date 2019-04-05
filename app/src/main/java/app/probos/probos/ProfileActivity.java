@@ -188,6 +188,10 @@ public class ProfileActivity extends AppCompatActivity {
             TextView profileBio = findViewById(R.id.profileBio);
             profileBio.setText(Html.fromHtml(currAcct.getNote(), Html.FROM_HTML_MODE_COMPACT));
 
+            TextView disclaimer = findViewById(R.id.disclaimerText);
+            String disclaimerText = "Information displayed here may reflect the user's profile incompletely. For the full profile, go to: " + currAcct.getUrl();
+            disclaimer.setText(disclaimerText);
+
             ImageView profBanner = findViewById(R.id.profile_banner);
             profBanner.setImageBitmap(bannerBitmap);
 
