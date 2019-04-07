@@ -46,16 +46,6 @@ public class EditProfileActivity extends AppCompatActivity {
     Relationship relationship;
     Boolean follow;
 
-    /*
-    public void setInfo(String instanceName, String accessToken, Long acctId) {
-        this.instanceName = instanceName;
-        this.accessToken = accessToken;
-        this.acctId = acctId;
-    }
-    */
-
-    //RecyclerView userRecycler;
-    //List<Account> accounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,22 +72,6 @@ public class EditProfileActivity extends AppCompatActivity {
         MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
 
-       /* infoRetrieval = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    currAcct = tmpAcct.getAccount(acctId).execute();
-                    URL newPP = new URL(currAcct.getAvatar());
-                    URL newBanner = new URL(currAcct.getHeader());
-                    ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
-                    bannerBitmap = BitmapFactory.decodeStream(newBanner.openConnection().getInputStream());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        infoRetrieval.start();*/
         new setUpViews().execute();
 
     }
@@ -163,7 +137,7 @@ public class EditProfileActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.menu.menu_done:
+            case R.id.action_menu_done:
 
                 EditText displayName = (EditText) findViewById(R.id.displayNameEditText);
                 EditText profileBio = (EditText) findViewById(R.id.profileBioEditText);
