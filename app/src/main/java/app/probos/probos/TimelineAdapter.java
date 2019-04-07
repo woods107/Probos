@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -340,8 +341,8 @@ public class TimelineAdapter extends
             display = true;
         } else {
             mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-            mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
-            mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+            mediaView1.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;//mediaLists.get(position).get(0).getHeight();
+            mediaView1.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;//mediaLists.get(position).get(0).getWidth();
             mediaView1.setVisibility(View.VISIBLE);
             display = true;
         }// End contains media if
@@ -651,8 +652,8 @@ public class TimelineAdapter extends
                     mediaView1.setVisibility(View.INVISIBLE);
                 } else {
                     mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-                    mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
-                    mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+                    mediaView1.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;//mediaLists.get(position).get(0).getHeight();
+                    mediaView1.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;//mediaLists.get(position).get(0).getWidth();
                     mediaView1.setVisibility(View.VISIBLE);
                 }// End contains media if
                 mediaView1.requestLayout(); // .requestLayout()
