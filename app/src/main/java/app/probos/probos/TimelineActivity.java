@@ -47,6 +47,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     static String instanceName;
     static String accessTokenStr;
+    static boolean staySignedIn;
     static String flag = "PERSONAL";
 
     /**
@@ -72,6 +73,7 @@ public class TimelineActivity extends AppCompatActivity {
         Intent currIntent = getIntent();
         instanceName = currIntent.getStringExtra("instancename");
         accessTokenStr = currIntent.getStringExtra("accesstoken");
+        staySignedIn = currIntent.getBooleanExtra("staySignedIn",false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -90,7 +92,14 @@ public class TimelineActivity extends AppCompatActivity {
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        if(staySignedIn==false) {
+            SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
+            SharedPreferences.Editor Ed = li.edit();
 
+            Ed.putString("accessToken", null);
+            Ed.putString("instance", null);
+            Ed.commit();
+        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
