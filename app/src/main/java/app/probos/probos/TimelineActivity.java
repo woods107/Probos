@@ -1,13 +1,16 @@
 package app.probos.probos;
 
+import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.renderscript.ScriptGroup;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -16,6 +19,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.EditText;
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.MastodonRequest;
@@ -39,6 +44,13 @@ import com.sys1yagi.mastodon4j.api.method.Streaming;
 
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.MastodonRequest;
+import com.sys1yagi.mastodon4j.api.method.Accounts;
+
+import okhttp3.OkHttpClient;
+
 import org.jetbrains.annotations.NotNull;
 
 import okhttp3.OkHttpClient;
@@ -49,6 +61,7 @@ public class TimelineActivity extends AppCompatActivity {
     static String accessTokenStr;
     static boolean staySignedIn;
     static String flag = "PERSONAL";
+    MastodonClient client;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -76,6 +89,7 @@ public class TimelineActivity extends AppCompatActivity {
         staySignedIn = currIntent.getBooleanExtra("staySignedIn",false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessTokenStr).build();
 
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
         //getSupportActionBar().setLogo(R.mipmap.ic_launcher);
@@ -109,6 +123,7 @@ public class TimelineActivity extends AppCompatActivity {
                 try {
                     draft.putExtra("instanceName",instanceName);
                     draft.putExtra("access",accessTokenStr);
+                    draft.putExtra("prevStatus","");
                     startActivity(draft);
 
                 } catch (Exception e) {
@@ -200,6 +215,99 @@ public class TimelineActivity extends AppCompatActivity {
             return true;
 
         }
+        else if (id == R.id.action_displayName) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Display Name");
+
+            final EditText in = new EditText(this);
+            in.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(in);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Accounts acct = new Accounts(client);
+
+                    Thread nameThr = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                acct.updateCredential(in.getText().toString(), null, null, null).execute();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    nameThr.start();
+
+                    try {
+                        nameThr.join();
+                    } catch (Exception e) {
+                        //literally do nothing plz
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+
+        }
+        else if (id == R.id.action_bio) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Update Bio");
+
+            final EditText in = new EditText(this);
+            in.setInputType(InputType.TYPE_CLASS_TEXT);
+
+            builder.setView(in);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Accounts acct = new Accounts(client);
+
+                    Thread bioThr = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                acct.updateCredential(null, in.getText().toString(), null, null).execute();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    bioThr.start();
+
+                    try {
+                        bioThr.join();
+                    } catch (Exception e) {
+                        //literally do nothing plz
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -256,7 +364,5 @@ public class TimelineActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
 }

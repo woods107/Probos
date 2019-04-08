@@ -111,6 +111,11 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_choice);
        SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+
+        SharedPreferences draft1=this.getSharedPreferences("draft1",MODE_PRIVATE);
+        SharedPreferences draft2=this.getSharedPreferences("draft2",MODE_PRIVATE);
+        SharedPreferences draft3=this.getSharedPreferences("draft3",MODE_PRIVATE);
+
         String savedAccess=sp1.getString("accessToken", null);
         String savedInstance = sp1.getString("instance", null);
         if(savedAccess!=null){
@@ -422,6 +427,26 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 Ed.putString("instance", null);
                 Ed.commit();
             }
+
+
+
+
+            //saved draft code
+            SharedPreferences draft1=getSharedPreferences("draft1",MODE_PRIVATE);
+            SharedPreferences draft2=getSharedPreferences("draft2",MODE_PRIVATE);
+            SharedPreferences draft3=getSharedPreferences("draft3",MODE_PRIVATE);
+
+            SharedPreferences.Editor draft1edit=draft1.edit();
+            SharedPreferences.Editor draft2edit=draft2.edit();
+            SharedPreferences.Editor draft3edit=draft3.edit();
+            draft1edit.putString("message","default draft 1");
+            draft2edit.putString("message","default draft 2");
+            draft3edit.putString("message","default draft 3");
+            draft1edit.commit();
+            draft2edit.commit();
+            draft3edit.commit();
+            //end saved draft code
+
             Intent intent = new Intent(this, TimelineActivity.class);
             intent.putExtra("accesstoken", accessToken.getAccessToken());
             intent.putExtra("instancename",instanceName);
