@@ -307,7 +307,30 @@ public class TimelineActivity extends AppCompatActivity {
 
             builder.show();
 
+        }else if(id == R.id.favorites){
+            try {
+                Intent intent = new Intent(this, favoritedList.class);
+                intent.putExtra("accesstoken",accessTokenStr);
+                intent.putExtra("instancename",instanceName);
+                startActivity(intent);
+                finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
+        }else if(id == R.id.colorPicker) {
+            try {
+                Intent intent = new Intent(this, color_picker.class);
+                intent.putExtra("accesstoken", accessTokenStr);
+                intent.putExtra("instancename", instanceName);
+                startActivity(intent);
+                finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

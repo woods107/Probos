@@ -22,4 +22,14 @@
         android:orderInCategory="100"
         android:title="Notifications"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/favorites"
+        android:orderInCategory="100"
+        android:title="Favorites"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/colorPicker"
+        android:orderInCategory="100"
+        android:title="Colors"
+        app:showAsAction="never" />
 </menu>

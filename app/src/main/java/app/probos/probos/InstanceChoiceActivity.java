@@ -167,11 +167,8 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
-                SharedPreferences.Editor Ed = li.edit();
-                Ed.putString("accessToken", null);
-                Ed.putString("instance", null);
-                Ed.commit();
+                SharedPreferences sp1=getSharedPreferences("Login", MODE_PRIVATE);
+                sp1.edit().clear().commit();
                 if (attemptLogin()) {
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -420,12 +417,8 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 Ed.putString("instance", instanceName);
                 Ed.commit();
             }else{
-                SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
-                SharedPreferences.Editor Ed = li.edit();
-
-                Ed.putString("accessToken", null);
-                Ed.putString("instance", null);
-                Ed.commit();
+                SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+                sp1.edit().clear().commit();
             }
 
 
