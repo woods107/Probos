@@ -65,6 +65,7 @@ public class DraftActivity extends AppCompatActivity {
     long id = 0;
     CoordinatorLayout tLayout;
     int defaultColor;
+    int sDefaultColor;
 
 
     //set visibility variable
@@ -101,11 +102,15 @@ public class DraftActivity extends AppCompatActivity {
         tLayout= (CoordinatorLayout) findViewById(R.id.activity_draft);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
         if(defaultColor==0) {
             defaultColor= ContextCompat.getColor(DraftActivity.this, R.color.colorPrimaryDark);
             tLayout.setBackgroundColor(defaultColor);
         }else{
             tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(DraftActivity.this,R.color.colorPrimary);
         }
 
 /*        //set visibility variable
@@ -116,6 +121,7 @@ public class DraftActivity extends AppCompatActivity {
             draft_body.setText(prevStatus);
         }
         FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setBackgroundColor(sDefaultColor);
         fab.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -168,6 +174,7 @@ public class DraftActivity extends AppCompatActivity {
         });
 
         FloatingActionButton privacy_settings = findViewById(R.id.privacy_settings);
+        privacy_settings.setBackgroundColor(sDefaultColor);
         privacy_settings.setOnClickListener(new View.OnClickListener() {
                 //do stuff for privacy settings
 
@@ -204,6 +211,7 @@ public class DraftActivity extends AppCompatActivity {
 
 
         FloatingActionButton attach_media = findViewById(R.id.media_attachment);
+        attach_media.setBackgroundColor(sDefaultColor);
         attach_media.setOnClickListener(new View.OnClickListener() {
 
             // Grab Files based on user selection in order to prepare to send them
@@ -216,6 +224,7 @@ public class DraftActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_SINGLE_FILE);
 
         FloatingActionButton saveButton = findViewById(R.id.save_button);
+        saveButton.setBackgroundColor(sDefaultColor);
         saveButton.setOnClickListener(new View.OnClickListener() {
             //do stuff for privacy settings
 
@@ -381,4 +390,4 @@ public class DraftActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-}//dear god
+}//dear god x color god

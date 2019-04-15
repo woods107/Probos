@@ -108,6 +108,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     boolean staySignedIn = false;
     LinearLayout icLayout;
     int defaultColor;
+    int sDefaultColor;
 
 
     AccessToken accessTokensaved;
@@ -126,6 +127,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         String savedAccess=sp1.getString("accessToken", null);
         String savedInstance = sp1.getString("instance", null);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
 
 
         if(defaultColor==0) {
@@ -133,6 +135,9 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             icLayout.setBackgroundColor(defaultColor);
         }else{
             icLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(InstanceChoiceActivity.this,R.color.colorPrimary);
         }
         if(savedAccess!=null){
 
@@ -168,6 +173,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         });*/
 
         CheckBox StaySignedIn = (CheckBox) findViewById(R.id.checkBox);
+        StaySignedIn.setBackgroundColor(sDefaultColor);
         StaySignedIn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,6 +186,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         });//works as intended
 
         Button mEmailSignInButton = (Button) findViewById(R.id.getauth_button);
+        mEmailSignInButton.setBackgroundColor(sDefaultColor);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -206,6 +213,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
         });
 
         Button mSignInButton = (Button) findViewById(R.id.signin_button);
+        mSignInButton.setBackgroundColor(sDefaultColor);
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

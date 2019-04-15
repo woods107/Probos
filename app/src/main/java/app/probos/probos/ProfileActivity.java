@@ -57,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     ConstraintLayout tLayout;
     int defaultColor;
+    int sDefaultColor;
 
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
@@ -87,11 +88,15 @@ public class ProfileActivity extends AppCompatActivity {
         tLayout= (ConstraintLayout) findViewById(R.id.activity_profile);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
         if(defaultColor==0) {
             defaultColor= ContextCompat.getColor(ProfileActivity.this, R.color.colorPrimaryDark);
             tLayout.setBackgroundColor(defaultColor);
         }else{
             tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(ProfileActivity.this,R.color.colorPrimary);
         }
 
         // Begin instantiating the userRecycler
@@ -218,7 +223,7 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
             ImageButton followButton= findViewById(R.id.followButton);
-
+            followButton.setBackgroundColor(sDefaultColor);
             if(follow) {
                 followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
             }else{

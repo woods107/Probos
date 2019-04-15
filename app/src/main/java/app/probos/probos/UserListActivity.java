@@ -41,7 +41,7 @@ public class UserListActivity extends AppCompatActivity {
 
     ConstraintLayout tLayout;
     int defaultColor;
-
+    int sDefaultColor;
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
         this.instanceName = instanceName;
@@ -77,13 +77,16 @@ public class UserListActivity extends AppCompatActivity {
         tLayout= (ConstraintLayout) findViewById(R.id.activity_user);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
         if(defaultColor==0) {
             defaultColor= ContextCompat.getColor(UserListActivity.this, R.color.colorPrimaryDark);
             tLayout.setBackgroundColor(defaultColor);
         }else{
             tLayout.setBackgroundColor(defaultColor);
         }
-
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(UserListActivity.this,R.color.colorPrimary);
+        }
         // Begin instantiating the userRecycler
         userRecycler = findViewById(R.id.user_recycler);
 

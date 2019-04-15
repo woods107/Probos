@@ -62,6 +62,7 @@ public class NotificationsPicker extends AppCompatActivity {
 
     CoordinatorLayout tLayout;
     int defaultColor;
+    int sDefaultColor;
 
     /*MastodonClient client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson())
             .accessToken(accessTokenStr)
@@ -82,11 +83,15 @@ public class NotificationsPicker extends AppCompatActivity {
         tLayout= (CoordinatorLayout) findViewById(R.id.activity_notification);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
         if(defaultColor==0) {
             defaultColor= ContextCompat.getColor(NotificationsPicker.this, R.color.colorPrimaryDark);
             tLayout.setBackgroundColor(defaultColor);
         }else{
             tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(NotificationsPicker.this,R.color.colorPrimary);
         }
         /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +113,7 @@ public class NotificationsPicker extends AppCompatActivity {
         }
 
         Switch follow = findViewById(R.id.Follow);
+        follow.setBackgroundColor(sDefaultColor);
         follow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,6 +122,7 @@ public class NotificationsPicker extends AppCompatActivity {
             }
         });
         Switch favorite = findViewById(R.id.Favorite);
+        favorite.setBackgroundColor(sDefaultColor);
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,6 +131,7 @@ public class NotificationsPicker extends AppCompatActivity {
             }
         });
         Switch mention = findViewById(R.id.Mention);
+        mention.setBackgroundColor(sDefaultColor);
         mention.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,6 +140,7 @@ public class NotificationsPicker extends AppCompatActivity {
             }
         });
         Switch reblog = findViewById(R.id.Reblog);
+        reblog.setBackgroundColor(sDefaultColor);
         reblog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

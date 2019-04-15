@@ -23,7 +23,9 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 public class color_picker extends AppCompatActivity {
     ConstraintLayout cpLayout;
     int mDefaultColor;
+    int sDefaultColor;
     Button cpButton;
+    Button scpButton;
     ImageButton backButton;
 
     @Override
@@ -32,23 +34,38 @@ public class color_picker extends AppCompatActivity {
         setContentView(R.layout.activity_color_picker);
 
         cpLayout=(ConstraintLayout) findViewById(R.id.activity_color_picker);
+        backButton=(ImageButton)findViewById(R.id.imageButton);
+        cpButton =(Button) findViewById(R.id.colorPicker);
+        scpButton=(Button) findViewById(R.id.secondColorPicker);
         SharedPreferences sp1 = getSharedPreferences("Color", MODE_PRIVATE);
         mDefaultColor=sp1.getInt("BackgroundColor",0);
+        sDefaultColor=sp1.getInt("SecondaryColor",0);
         if(mDefaultColor==0){
             mDefaultColor= ContextCompat.getColor(color_picker.this, R.color.colorPrimaryDark);
             cpLayout.setBackgroundColor(mDefaultColor);
         }else{
             cpLayout.setBackgroundColor(mDefaultColor);
         }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(color_picker.this, R.color.colorPrimary);
+            cpButton.setBackgroundColor(sDefaultColor);
+            scpButton.setBackgroundColor(sDefaultColor);
+            backButton.setBackgroundColor(sDefaultColor);
+        }else{
+            cpButton.setBackgroundColor(sDefaultColor);
+            scpButton.setBackgroundColor(sDefaultColor);
+            backButton.setBackgroundColor(sDefaultColor);
+        }
 
-        cpButton =(Button) findViewById(R.id.colorPicker);
+
+
         cpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openColorPicker();
             }
         });
-        backButton=(ImageButton)findViewById(R.id.imageButton);
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,7 +73,15 @@ public class color_picker extends AppCompatActivity {
                 /*Intent intent = new Intent(this, TimelineActivity.class);
                 startActivity(intent);
                 finish();*/
+                onBackPressed();
 
+            }
+        });
+
+        scpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openColorPicker2();
             }
         });
     }
@@ -76,6 +101,30 @@ public class color_picker extends AppCompatActivity {
                 SharedPreferences.Editor Ed = li.edit();
 
                 Ed.putInt("BackgroundColor", mDefaultColor);
+
+                Ed.commit();
+            }
+        });
+        colorPicker.show();
+
+    }
+    public void openColorPicker2(){
+        AmbilWarnaDialog colorPicker =new AmbilWarnaDialog(this, sDefaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                sDefaultColor=color;
+                cpButton.setBackgroundColor(sDefaultColor);
+                scpButton.setBackgroundColor(sDefaultColor);
+                backButton.setBackgroundColor(sDefaultColor);
+                SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
+                SharedPreferences.Editor Ed = li.edit();
+
+                Ed.putInt("SecondaryColor", sDefaultColor);
 
                 Ed.commit();
             }

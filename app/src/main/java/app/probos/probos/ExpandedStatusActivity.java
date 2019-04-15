@@ -50,6 +50,7 @@ public class ExpandedStatusActivity extends AppCompatActivity {
 
     ConstraintLayout tLayout;
     int defaultColor;
+    int sDefaultColor;
     //Bitmap bannerBitmap;
 
     /*
@@ -81,13 +82,16 @@ public class ExpandedStatusActivity extends AppCompatActivity {
         tLayout= (ConstraintLayout) findViewById(R.id.activity_expanded_status);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
         if(defaultColor==0) {
             defaultColor= ContextCompat.getColor(ExpandedStatusActivity.this, R.color.colorPrimaryDark);
             tLayout.setBackgroundColor(defaultColor);
         }else{
             tLayout.setBackgroundColor(defaultColor);
         }
-
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(ExpandedStatusActivity.this,R.color.colorPrimary);
+        }
         // Begin instantiating the userRecycler
        // userRecycler = findViewById(R.id.user_recycler);
 

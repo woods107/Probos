@@ -56,6 +56,8 @@ import okhttp3.OkHttpClient;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Time;
+
 import okhttp3.OkHttpClient;
 
 public class TimelineActivity extends AppCompatActivity {
@@ -67,6 +69,7 @@ public class TimelineActivity extends AppCompatActivity {
     MastodonClient client;
     CoordinatorLayout tLayout;
     int defaultColor;
+    int sDefaultColor;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -96,11 +99,15 @@ public class TimelineActivity extends AppCompatActivity {
         tLayout= (CoordinatorLayout) findViewById(R.id.activity_timeline);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
         if(defaultColor==0) {
             defaultColor= ContextCompat.getColor(TimelineActivity.this, R.color.colorPrimaryDark);
             tLayout.setBackgroundColor(defaultColor);
         }else{
             tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(TimelineActivity.this,R.color.colorPrimary);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -119,7 +126,7 @@ public class TimelineActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
+        tabLayout.setBackgroundColor(sDefaultColor);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         if(staySignedIn==false) {
@@ -131,6 +138,7 @@ public class TimelineActivity extends AppCompatActivity {
             Ed.commit();
         }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundColor(sDefaultColor);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -237,6 +245,7 @@ public class TimelineActivity extends AppCompatActivity {
             builder.setTitle("Display Name");
 
             final EditText in = new EditText(this);
+            in.setBackgroundColor(sDefaultColor);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(in);
 
@@ -283,6 +292,7 @@ public class TimelineActivity extends AppCompatActivity {
             builder.setTitle("Update Bio");
 
             final EditText in = new EditText(this);
+            in.setBackgroundColor(sDefaultColor);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
 
             builder.setView(in);
