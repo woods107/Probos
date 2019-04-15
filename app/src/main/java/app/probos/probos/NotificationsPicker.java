@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +44,7 @@ import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Streaming;
 
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -56,6 +59,9 @@ public class NotificationsPicker extends AppCompatActivity {
     static String instanceName;
     static String accessTokenStr;
     long longid=0;
+
+    CoordinatorLayout tLayout;
+    int defaultColor;
 
     /*MastodonClient client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson())
             .accessToken(accessTokenStr)
@@ -73,6 +79,15 @@ public class NotificationsPicker extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("instancename");
         accessTokenStr = currIntent.getStringExtra("accesstoken");
 
+        tLayout= (CoordinatorLayout) findViewById(R.id.activity_notification);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(NotificationsPicker.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
         /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

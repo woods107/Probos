@@ -1,10 +1,13 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -51,6 +55,9 @@ public class ProfileActivity extends AppCompatActivity {
     Relationship relationship;
     Boolean follow;
 
+    ConstraintLayout tLayout;
+    int defaultColor;
+
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
         this.instanceName = instanceName;
@@ -76,6 +83,16 @@ public class ProfileActivity extends AppCompatActivity {
         acctId = currIntent.getLongExtra("id", 0);
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
+
+        tLayout= (ConstraintLayout) findViewById(R.id.activity_profile);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(ProfileActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
 
         // Begin instantiating the userRecycler
         // userRecycler = findViewById(R.id.user_recycler);

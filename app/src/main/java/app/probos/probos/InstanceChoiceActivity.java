@@ -13,8 +13,10 @@ import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -40,6 +42,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -103,6 +106,8 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     private View mLoginFormView;
     boolean signInSuccess = false;
     boolean staySignedIn = false;
+    LinearLayout icLayout;
+    int defaultColor;
 
 
     AccessToken accessTokensaved;
@@ -110,14 +115,25 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_choice);
-       SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
 
+        icLayout= (LinearLayout) findViewById(R.id.activity_instance_choice);
+       SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         SharedPreferences draft1=this.getSharedPreferences("draft1",MODE_PRIVATE);
         SharedPreferences draft2=this.getSharedPreferences("draft2",MODE_PRIVATE);
         SharedPreferences draft3=this.getSharedPreferences("draft3",MODE_PRIVATE);
 
         String savedAccess=sp1.getString("accessToken", null);
         String savedInstance = sp1.getString("instance", null);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+
+
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(InstanceChoiceActivity.this, R.color.colorPrimaryDark);
+            icLayout.setBackgroundColor(defaultColor);
+        }else{
+            icLayout.setBackgroundColor(defaultColor);
+        }
         if(savedAccess!=null){
 
 

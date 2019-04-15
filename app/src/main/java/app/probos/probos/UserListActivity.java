@@ -1,10 +1,13 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 //import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
@@ -34,6 +38,9 @@ public class UserListActivity extends AppCompatActivity {
     String instanceName;
     String accessToken;
     Long acctId;
+
+    ConstraintLayout tLayout;
+    int defaultColor;
 
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
@@ -66,6 +73,16 @@ public class UserListActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
         toGet = currIntent.getIntExtra("toGet",0);
+
+        tLayout= (ConstraintLayout) findViewById(R.id.activity_user);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(UserListActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
 
         // Begin instantiating the userRecycler
         userRecycler = findViewById(R.id.user_recycler);

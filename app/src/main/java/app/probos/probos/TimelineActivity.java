@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.renderscript.ScriptGroup;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +44,7 @@ import com.sys1yagi.mastodon4j.api.method.Notifications;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Streaming;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -62,6 +65,8 @@ public class TimelineActivity extends AppCompatActivity {
     static boolean staySignedIn;
     static String flag = "PERSONAL";
     MastodonClient client;
+    CoordinatorLayout tLayout;
+    int defaultColor;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -87,6 +92,17 @@ public class TimelineActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("instancename");
         accessTokenStr = currIntent.getStringExtra("accesstoken");
         staySignedIn = currIntent.getBooleanExtra("staySignedIn",false);
+
+        tLayout= (CoordinatorLayout) findViewById(R.id.activity_timeline);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(TimelineActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessTokenStr).build();
@@ -321,8 +337,6 @@ public class TimelineActivity extends AppCompatActivity {
         }else if(id == R.id.colorPicker) {
             try {
                 Intent intent = new Intent(this, color_picker.class);
-                intent.putExtra("accesstoken", accessTokenStr);
-                intent.putExtra("instancename", instanceName);
                 startActivity(intent);
                 finish();
             } catch (Exception e) {
