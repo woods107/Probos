@@ -63,12 +63,6 @@ public class EditProfileActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
-        // Begin instantiating the userRecycler
-        // userRecycler = findViewById(R.id.user_recycler);
-
-        // Figure out how to set this up better
-        //View rootView = getLayoutInflater().inflate
-
         MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
 

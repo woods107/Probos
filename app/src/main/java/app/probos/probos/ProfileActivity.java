@@ -39,7 +39,7 @@ import okhttp3.OkHttpClient;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    // Get these three things before starting anything
+    // Get these four things before starting anything
 
     String instanceName;
     String accessToken;
@@ -54,16 +54,6 @@ public class ProfileActivity extends AppCompatActivity {
     Relationship relationship;
     Boolean follow;
 
-    /*
-    public void setInfo(String instanceName, String accessToken, Long acctId) {
-        this.instanceName = instanceName;
-        this.accessToken = accessToken;
-        this.acctId = acctId;
-    }
-    */
-
-    //RecyclerView userRecycler;
-    //List<Account> accounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,31 +71,10 @@ public class ProfileActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
-        // Begin instantiating the userRecycler
-        // userRecycler = findViewById(R.id.user_recycler);
-
-        // Figure out how to set this up better
-        //View rootView = getLayoutInflater().inflate
 
         MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
 
-       /* infoRetrieval = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    currAcct = tmpAcct.getAccount(acctId).execute();
-                    URL newPP = new URL(currAcct.getAvatar());
-                    URL newBanner = new URL(currAcct.getHeader());
-                    ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
-                    bannerBitmap = BitmapFactory.decodeStream(newBanner.openConnection().getInputStream());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        infoRetrieval.start();*/
         new setUpViews().execute();
 
     }
@@ -257,14 +226,6 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
         }
-
-
-        //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
-        //UserListAdapter userListAdapter = new UserListAdapter(accounts);
-        //userRecycler.setAdapter(userListAdapter);
-        //userRecycler.setLayoutManager(new LinearLayoutManager(this));
-        //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
-        //return rootView;
 
     }
 
