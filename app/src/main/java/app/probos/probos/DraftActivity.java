@@ -365,5 +365,6 @@ public class DraftActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }// End onActivityResult
+
 }//dear god

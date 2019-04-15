@@ -1,10 +1,14 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,11 +27,17 @@ import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Relationship;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+
+import static app.probos.probos.DraftActivity.REQUEST_GET_SINGLE_FILE;
 
 //import android.view.LayoutInflater;
 
@@ -112,6 +122,31 @@ public class EditProfileActivity extends AppCompatActivity {
             imageView.setImageBitmap(ppBitmap);
             imageView.bringToFront();
 
+            /*
+            *
+
+            TODO create a String to hold base64 encoded image selected for both profile icon and banner, both default to NULL
+            TODO substitute those strings into the updateCredential call
+
+            FloatingActionButton attach_media = findViewById(R.id.media_attachment);
+            attach_media.setOnClickListener(new View.OnClickListener() {
+
+            // Grab Files based on user selection in order to prepare to send them
+
+            public void onClick(View view) {
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_SINGLE_FILE);
+
+            }
+
+            });// End attach_media onClickListener
+
+            *
+            * */
+
 
         }
 
@@ -164,5 +199,49 @@ public class EditProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+
+            if (resultCode == RESULT_OK) {
+                if (requestCode == REQUEST_GET_SINGLE_FILE) {
+
+                    Uri selectedImageUri = data.getData();
+
+
+                    String filePath = "";
+                    String fileId = DocumentsContract.getDocumentId(selectedImageUri);
+                    // Split at colon, use second item in the array
+                    String id = fileId.split(":")[1];
+                    String[] column = {MediaStore.Images.Media.DATA};
+                    String selector = MediaStore.Images.Media._ID + "=?";
+                    Cursor cursor = this.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            column, selector, new String[]{id}, null);
+                    int columnIndex = cursor.getColumnIndex(column[0]);
+                    if (cursor.moveToFirst()) {
+                        filePath = cursor.getString(columnIndex);
+                    }
+                    cursor.close();
+
+                    File f = new File(filePath);
+
+                    //TODO determine how exactly to convert a file into a base64 encoded String to submit for user icon and banner
+
+                    // This line is the most "correct" but not necessarily for this context
+                    //MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
+
+                    // This line is less "correct" but potentially useful
+                    //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
+
+
+                }// End requestCode check
+            }// End RESULT_OK if
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }// End onActivityResult
 
 }
