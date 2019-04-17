@@ -43,6 +43,7 @@ import com.sys1yagi.mastodon4j.api.method.Notifications;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Streaming;
 
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -61,6 +62,7 @@ public class NotificationsPicker extends AppCompatActivity {
     long longid=0;
 
     CoordinatorLayout tLayout;
+    Button back;
     int defaultColor;
     int sDefaultColor;
 
@@ -91,6 +93,7 @@ public class NotificationsPicker extends AppCompatActivity {
 
         tLayout= (CoordinatorLayout) findViewById(R.id.activity_notification);
 
+
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
         sDefaultColor=sp2.getInt("SecondaryColor",0);
@@ -116,6 +119,8 @@ public class NotificationsPicker extends AppCompatActivity {
         if(intent.getLongExtra("id",0 )>0){
             longid=intent.getLongExtra("id",0 );
         }
+
+
 
         Switch follow = findViewById(R.id.Follow);
         follow.setBackgroundColor(sDefaultColor);
@@ -153,7 +158,10 @@ public class NotificationsPicker extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+       
     }
+
     /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

@@ -229,7 +229,7 @@ public class TimelineActivity extends AppCompatActivity {
             try {
                 Intent intent = new Intent(this, NotificationsPicker.class);
                 startActivity(intent);
-                finish();
+                //finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
             }
@@ -336,7 +336,7 @@ public class TimelineActivity extends AppCompatActivity {
                 intent.putExtra("accesstoken",accessTokenStr);
                 intent.putExtra("instancename",instanceName);
                 startActivity(intent);
-                finish();
+                //finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
             }
@@ -345,7 +345,7 @@ public class TimelineActivity extends AppCompatActivity {
             try {
                 Intent intent = new Intent(this, color_picker.class);
                 startActivity(intent);
-                finish();
+                //finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
             }

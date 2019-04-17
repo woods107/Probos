@@ -28,18 +28,19 @@ public class color_picker extends AppCompatActivity {
     Button cpButton;
     Button scpButton;
     Button rdButton;
-    ImageButton backButton;
-    Toolbar toolbar;
+    Button backButton;
+    //ImageButton backButton;
+    //Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         cpLayout=(ConstraintLayout) findViewById(R.id.activity_color_picker);
-        backButton=(ImageButton)findViewById(R.id.imageButton);
+        backButton=(Button)findViewById(R.id.backButton);
         cpButton =(Button) findViewById(R.id.colorPicker);
         scpButton=(Button) findViewById(R.id.secondColorPicker);
         rdButton=(Button) findViewById(R.id.restoreDefault);
@@ -64,7 +65,7 @@ public class color_picker extends AppCompatActivity {
             backButton.setBackgroundColor(sDefaultColor);
             rdButton.setBackgroundColor(sDefaultColor);
         }
-        toolbar.setBackgroundColor(sDefaultColor);
+        //toolbar.setBackgroundColor(sDefaultColor);
 
 
         cpButton.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +82,7 @@ public class color_picker extends AppCompatActivity {
                 /*Intent intent = new Intent(this, TimelineActivity.class);
                 startActivity(intent);
                 finish();*/
+                //finish();
                 onBackPressed();
 
             }
@@ -102,7 +104,7 @@ public class color_picker extends AppCompatActivity {
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
                 rdButton.setBackgroundColor(sDefaultColor);
-                toolbar.setBackgroundColor(sDefaultColor);
+                //toolbar.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
 
@@ -150,7 +152,7 @@ public class color_picker extends AppCompatActivity {
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
                 rdButton.setBackgroundColor(sDefaultColor);
-                toolbar.setBackgroundColor(sDefaultColor);
+                //toolbar.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
 

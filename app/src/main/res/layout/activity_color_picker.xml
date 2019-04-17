@@ -11,30 +11,13 @@
         android:id="@+id/colorPicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="113dp"
+        android:layout_marginStart="103dp"
         android:layout_marginTop="251dp"
-        android:layout_marginEnd="114dp"
         android:layout_marginBottom="50dp"
         android:text="Primary Color Picker"
         app:layout_constraintBottom_toTopOf="@+id/secondColorPicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="356dp"
-        android:layout_marginBottom="680dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
-        app:srcCompat="@android:drawable/ic_notification_clear_all" />
 
     <Button
         android:id="@+id/secondColorPicker"
@@ -42,12 +25,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="103dp"
         android:layout_marginTop="50dp"
-        android:layout_marginEnd="103dp"
-        android:layout_marginBottom="68dp"
+        android:layout_marginBottom="50dp"
         android:text="Secondary Color Picker"
         app:layout_constraintBottom_toTopOf="@+id/restoreDefault"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/colorPicker" />
 
@@ -56,12 +36,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="103dp"
-        android:layout_marginTop="49dp"
-        android:layout_marginEnd="103dp"
+        android:layout_marginTop="50dp"
         android:layout_marginBottom="187dp"
         android:text="Restore Default Colors"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/secondColorPicker" />
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
