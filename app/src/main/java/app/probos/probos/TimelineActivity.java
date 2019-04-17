@@ -95,7 +95,7 @@ public class TimelineActivity extends AppCompatActivity {
         Intent currIntent = getIntent();
         instanceName = currIntent.getStringExtra("instancename");
         accessTokenStr = currIntent.getStringExtra("accesstoken");
-        staySignedIn = currIntent.getBooleanExtra("staySignedIn",false);
+        //staySignedIn = currIntent.getBooleanExtra("staySignedIn",false);
 
         tLayout= (CoordinatorLayout) findViewById(R.id.activity_timeline);
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
@@ -133,14 +133,7 @@ public class TimelineActivity extends AppCompatActivity {
         tabLayout.setBackgroundColor(sDefaultColor);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-        if(staySignedIn==false) {
-            SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
-            SharedPreferences.Editor Ed = li.edit();
 
-            Ed.putString("accessToken", null);
-            Ed.putString("instance", null);
-            Ed.commit();
-        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setBackgroundColor(sDefaultColor);
         fab.setOnClickListener(new View.OnClickListener() {

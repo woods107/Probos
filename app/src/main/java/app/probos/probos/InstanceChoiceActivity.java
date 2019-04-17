@@ -467,7 +467,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             Intent intent = new Intent(this, TimelineActivity.class);
             intent.putExtra("accesstoken", accessToken.getAccessToken());
             intent.putExtra("instancename",instanceName);
-            intent.putExtra("staySignedIn",staySignedIn);
+            //intent.putExtra("staySignedIn",staySignedIn);
             startActivity(intent);
             finish();
         } catch (Exception e) {
