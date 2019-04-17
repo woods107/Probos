@@ -76,11 +76,21 @@ public class NotificationsPicker extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
         Intent currIntent = getIntent();
         instanceName = currIntent.getStringExtra("instancename");
         accessTokenStr = currIntent.getStringExtra("accesstoken");
 
+       /* MastodonClient client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson())
+                .accessToken(accessTokenStr)
+                .useStreamingApi()
+                .build();*/
+
+        Intent intent = getIntent();
+
         tLayout= (CoordinatorLayout) findViewById(R.id.activity_notification);
+
         SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         defaultColor = sp2.getInt("BackgroundColor", 0);
         sDefaultColor=sp2.getInt("SecondaryColor",0);
@@ -101,13 +111,8 @@ public class NotificationsPicker extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });*/
-        MastodonClient client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson())
-                .accessToken(accessTokenStr)
-                .useStreamingApi()
-                .build();
 
-        Intent intent = getIntent();
-
+        toolbar.setBackgroundColor(sDefaultColor);
         if(intent.getLongExtra("id",0 )>0){
             longid=intent.getLongExtra("id",0 );
         }

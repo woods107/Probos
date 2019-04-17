@@ -87,6 +87,7 @@ public class UserListActivity extends AppCompatActivity {
         if(sDefaultColor==0){
             sDefaultColor= ContextCompat.getColor(UserListActivity.this,R.color.colorPrimary);
         }
+        toolbar.setBackgroundColor(sDefaultColor);
         // Begin instantiating the userRecycler
         userRecycler = findViewById(R.id.user_recycler);
 

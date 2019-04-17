@@ -112,6 +112,7 @@ public class DraftActivity extends AppCompatActivity {
         if(sDefaultColor==0){
             sDefaultColor= ContextCompat.getColor(DraftActivity.this,R.color.colorPrimary);
         }
+        toolbar.setBackgroundColor(sDefaultColor);
 
 /*        //set visibility variable
         String[] settings = {"visible","private","test","DanielSmeels"};

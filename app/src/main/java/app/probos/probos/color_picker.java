@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toolbar;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 public class color_picker extends AppCompatActivity {
@@ -28,11 +29,14 @@ public class color_picker extends AppCompatActivity {
     Button scpButton;
     Button rdButton;
     ImageButton backButton;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         cpLayout=(ConstraintLayout) findViewById(R.id.activity_color_picker);
         backButton=(ImageButton)findViewById(R.id.imageButton);
@@ -60,7 +64,7 @@ public class color_picker extends AppCompatActivity {
             backButton.setBackgroundColor(sDefaultColor);
             rdButton.setBackgroundColor(sDefaultColor);
         }
-
+        toolbar.setBackgroundColor(sDefaultColor);
 
 
         cpButton.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +102,7 @@ public class color_picker extends AppCompatActivity {
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
                 rdButton.setBackgroundColor(sDefaultColor);
+                toolbar.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
 
@@ -145,6 +150,7 @@ public class color_picker extends AppCompatActivity {
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
                 rdButton.setBackgroundColor(sDefaultColor);
+                toolbar.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
 

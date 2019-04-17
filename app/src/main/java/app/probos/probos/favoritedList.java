@@ -67,8 +67,8 @@ import okhttp3.RequestBody;
 import static app.probos.probos.TimelineActivity.accessTokenStr;
 import static app.probos.probos.TimelineActivity.instanceName;
 
-public class favoritedList  //extends
-       /* RecyclerView.Adapter<TimelineAdapter.ViewHolder> */{
+public class favoritedList  extends
+        RecyclerView.Adapter<favoritedList.ViewHolder> {
 
     MastodonClient client;
     Statuses statusesAPI;
@@ -77,7 +77,7 @@ public class favoritedList  //extends
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    /*public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView messageUser;
@@ -131,7 +131,7 @@ public class favoritedList  //extends
 
 
     // Pass in the contact array into the constructor
-    public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
+    public favoritedList(List<Status> statuses, String accessToken, String instanceName) {
 
         mStatuses = statuses;
         client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
@@ -213,7 +213,7 @@ public class favoritedList  //extends
 
     // Usually involves inflating a layout from XML and returning the holder
     @Override
-    public TimelineAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public favoritedList.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -221,13 +221,13 @@ public class favoritedList  //extends
         View contactView = inflater.inflate(R.layout.item_timeline, parent, false);
 
         // Return a new holder instance
-        TimelineAdapter.ViewHolder viewHolder = new TimelineAdapter.ViewHolder(contactView);
+        favoritedList.ViewHolder viewHolder = new favoritedList.ViewHolder(contactView);
         return viewHolder;
     }
 
     // Involves populating data into the item through holder
     @Override
-    public void onBindViewHolder(TimelineAdapter.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(favoritedList.ViewHolder viewHolder, int position) {
         // Get the data model based on position
 
 
@@ -426,8 +426,8 @@ public class favoritedList  //extends
                 } catch (Exception e) {
                     e.printStackTrace();
                 }??*/
-           // }
-        /*});
+           }
+        });
         ImageButton deleteButton = viewHolder.deleteButton;
 
         if(position < isAuthorOfPost.size() && isAuthorOfPost.get(viewHolder.getAdapterPosition())){
@@ -461,7 +461,7 @@ public class favoritedList  //extends
                                         public void onClick(DialogInterface dialog, int which) {
                                             // continue with delete
                                             try{
-                                                new TimelineAdapter.sendDelete(id).execute();
+                                                new favoritedList.sendDelete(id).execute();
                                             }catch (Exception e){
                                                 //do nothing
                                                 int useless = 25;
@@ -489,7 +489,7 @@ public class favoritedList  //extends
                                         view.getContext().startActivity(draft);
                                         //TODO: This is the temporary placement of delete for Sprint 2. This does not cover the case where they select delete and redraft and back out of the activity
                                         try{
-                                            new TimelineAdapter.sendDelete(id).execute();
+                                            new favoritedList.sendDelete(id).execute();
                                         }catch (Exception e){
                                             //do nothing
                                             int useless = 25;
@@ -601,7 +601,7 @@ public class favoritedList  //extends
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
-            /*}
+            }
         });
 
         ImageButton replyButton = viewHolder.replyButton;
@@ -741,7 +741,7 @@ public class favoritedList  //extends
 
 
     List<Status> statusList;
-    TimelineAdapter timelineAdapter;
+    favoritedList favoritedList;
     SwipeRefreshLayout swipeLayout;
 
 
@@ -913,4 +913,4 @@ public class favoritedList  //extends
 
 
 
-}
+//}

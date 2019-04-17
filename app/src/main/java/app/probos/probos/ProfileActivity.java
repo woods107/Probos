@@ -98,6 +98,7 @@ public class ProfileActivity extends AppCompatActivity {
         if(sDefaultColor==0){
             sDefaultColor= ContextCompat.getColor(ProfileActivity.this,R.color.colorPrimary);
         }
+        toolbar.setBackgroundColor(sDefaultColor);
 
         // Begin instantiating the userRecycler
         // userRecycler = findViewById(R.id.user_recycler);
