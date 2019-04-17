@@ -27,9 +27,12 @@ import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Relationship;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
@@ -55,6 +58,14 @@ public class EditProfileActivity extends AppCompatActivity {
     Bitmap bannerBitmap;
     Relationship relationship;
     Boolean follow;
+
+    File prof = null;
+    File head = null;
+    String profImg = null;
+    String headImg = null;
+
+    public static final int REQUEST_GET_PROFILE_FILE = 13;
+    public static final int REQUEST_GET_HEADER_FILE = 23;
 
 
     @Override
@@ -118,9 +129,40 @@ public class EditProfileActivity extends AppCompatActivity {
             ImageView profBanner = findViewById(R.id.profile_banner);
             profBanner.setImageBitmap(bannerBitmap);
 
+            profBanner.setOnClickListener(new View.OnClickListener() {
+
+                // Grab Files based on user selection in order to prepare to send them
+
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("image/*");
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_HEADER_FILE);
+
+                }
+
+            });// End profBanner onClickListener
+
             CircleImageView imageView = findViewById(R.id.profile_full_picture);
             imageView.setImageBitmap(ppBitmap);
             imageView.bringToFront();
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+
+                // Grab Files based on user selection in order to prepare to send them
+
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("image/*");
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_PROFILE_FILE);
+
+                }
+
+            });// End imageView onClickListener
+
 
             /*
             *
@@ -171,11 +213,38 @@ public class EditProfileActivity extends AppCompatActivity {
                 EditText displayName = (EditText) findViewById(R.id.displayNameEditText);
                 EditText profileBio = (EditText) findViewById(R.id.profileBioEditText);
 
+                Base64.Encoder enc = Base64.getEncoder();
+
+                try {
+
+                    if (prof != null) {
+                        byte[] profBytes = FileUtils.readFileToByteArray(prof);
+                        profImg = "data:image/jpg;base64," + enc.encodeToString(profBytes);
+                    }
+
+                    if (head != null) {
+                        byte[] headBytes = FileUtils.readFileToByteArray(head);
+                        headImg = "data:image/jpg;base64," + enc.encodeToString(headBytes);
+                    }
+
+                } catch (Exception e) { e.printStackTrace(); }
+
+
                 Thread profileThr = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, null).execute();
+
+                            if (profImg != null && headImg != null) {
+                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), profImg, headImg).execute();
+                            } else if (profImg != null) {
+                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), profImg, null).execute();
+                            } else if (headImg != null) {
+                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, headImg).execute();
+                            } else {
+                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, null).execute();
+                            }
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -206,7 +275,7 @@ public class EditProfileActivity extends AppCompatActivity {
         try {
 
             if (resultCode == RESULT_OK) {
-                if (requestCode == REQUEST_GET_SINGLE_FILE) {
+                if (requestCode == REQUEST_GET_PROFILE_FILE || requestCode == REQUEST_GET_HEADER_FILE) {
 
                     Uri selectedImageUri = data.getData();
 
@@ -225,7 +294,8 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                     cursor.close();
 
-                    File f = new File(filePath);
+                    if (requestCode == REQUEST_GET_PROFILE_FILE) { prof = new File(filePath); }
+                    else { head = new File(filePath); }
 
                     //TODO determine how exactly to convert a file into a base64 encoded String to submit for user icon and banner
 
