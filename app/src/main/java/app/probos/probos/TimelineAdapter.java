@@ -226,6 +226,7 @@ public class TimelineAdapter extends
         Long id = status.getId();
 
 
+
         if (position == mStatuses.size()-1) {
             Thread olderRetrieval = new Thread(new Runnable() {
                 @Override

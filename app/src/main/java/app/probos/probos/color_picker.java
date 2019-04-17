@@ -26,6 +26,7 @@ public class color_picker extends AppCompatActivity {
     int sDefaultColor;
     Button cpButton;
     Button scpButton;
+    Button rdButton;
     ImageButton backButton;
 
     @Override
@@ -37,6 +38,7 @@ public class color_picker extends AppCompatActivity {
         backButton=(ImageButton)findViewById(R.id.imageButton);
         cpButton =(Button) findViewById(R.id.colorPicker);
         scpButton=(Button) findViewById(R.id.secondColorPicker);
+        rdButton=(Button) findViewById(R.id.restoreDefault);
         SharedPreferences sp1 = getSharedPreferences("Color", MODE_PRIVATE);
         mDefaultColor=sp1.getInt("BackgroundColor",0);
         sDefaultColor=sp1.getInt("SecondaryColor",0);
@@ -51,10 +53,12 @@ public class color_picker extends AppCompatActivity {
             cpButton.setBackgroundColor(sDefaultColor);
             scpButton.setBackgroundColor(sDefaultColor);
             backButton.setBackgroundColor(sDefaultColor);
+            rdButton.setBackgroundColor(sDefaultColor);
         }else{
             cpButton.setBackgroundColor(sDefaultColor);
             scpButton.setBackgroundColor(sDefaultColor);
             backButton.setBackgroundColor(sDefaultColor);
+            rdButton.setBackgroundColor(sDefaultColor);
         }
 
 
@@ -82,6 +86,25 @@ public class color_picker extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 openColorPicker2();
+            }
+        });
+        rdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDefaultColor=ContextCompat.getColor(color_picker.this,R.color.colorPrimaryDark);
+                sDefaultColor=ContextCompat.getColor(color_picker.this,R.color.colorPrimary);
+                cpLayout.setBackgroundColor(mDefaultColor);
+                cpButton.setBackgroundColor(sDefaultColor);
+                scpButton.setBackgroundColor(sDefaultColor);
+                backButton.setBackgroundColor(sDefaultColor);
+                rdButton.setBackgroundColor(sDefaultColor);
+                SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
+                SharedPreferences.Editor Ed = li.edit();
+
+                Ed.putInt("BackgroundColor", mDefaultColor);
+                Ed.putInt("SecondaryColor", sDefaultColor);
+
+                Ed.commit();
             }
         });
     }
@@ -121,6 +144,7 @@ public class color_picker extends AppCompatActivity {
                 cpButton.setBackgroundColor(sDefaultColor);
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
+                rdButton.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
 

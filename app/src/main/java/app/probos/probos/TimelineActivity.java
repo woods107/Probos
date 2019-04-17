@@ -70,6 +70,7 @@ public class TimelineActivity extends AppCompatActivity {
     CoordinatorLayout tLayout;
     int defaultColor;
     int sDefaultColor;
+    Toolbar bar;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -124,6 +125,9 @@ public class TimelineActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        bar = (Toolbar) findViewById(R.id.toolbar);
+        bar.setBackgroundColor(sDefaultColor);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setBackgroundColor(sDefaultColor);
@@ -245,7 +249,7 @@ public class TimelineActivity extends AppCompatActivity {
             builder.setTitle("Display Name");
 
             final EditText in = new EditText(this);
-            in.setBackgroundColor(sDefaultColor);
+            //in.setBackgroundColor(sDefaultColor);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(in);
 
@@ -292,7 +296,7 @@ public class TimelineActivity extends AppCompatActivity {
             builder.setTitle("Update Bio");
 
             final EditText in = new EditText(this);
-            in.setBackgroundColor(sDefaultColor);
+            //in.setBackgroundColor(sDefaultColor);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
 
             builder.setView(in);
