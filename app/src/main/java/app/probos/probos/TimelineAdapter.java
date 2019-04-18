@@ -161,6 +161,7 @@ public class TimelineAdapter extends
                             try {
                                 if (media.get(j).getType().equals("image")) {
                                     imgURL = new URL(media.get(j).getUrl());
+
                                     Bitmap mediaBitmap = BitmapFactory.decodeStream(imgURL.openConnection().getInputStream());
                                     imgs.add(mediaBitmap);
                                 }
@@ -185,6 +186,7 @@ public class TimelineAdapter extends
                 }
             }
         });
+
 
 
         getAcct.start();
