@@ -78,8 +78,10 @@ public class favoritedList  extends AppCompatActivity {
     boolean loaded = false;
     Pageable<com.sys1yagi.mastodon4j.api.entity.Status> statuses;
 
-    LinearLayout tLayout;
+    CoordinatorLayout tLayout;
+    Toolbar tool;
     int defaultColor;
+    int sDefaultColor;
 
     public void setInfo(){
         Intent currIntent = getIntent();
@@ -128,6 +130,22 @@ public class favoritedList  extends AppCompatActivity {
         setInfo();
         MastodonClient authClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         timelines = new Timelines(authClient);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        tLayout=(CoordinatorLayout) findViewById(R.id.activity_favorited_list);
+        tool= (Toolbar) findViewById(R.id.toolbar);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(favoritedList.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(favoritedList.this,R.color.colorPrimary);
+        }
+        tool.setBackgroundColor(sDefaultColor);
+
         //new Tab1Personal.grabTimeline().execute();
         new favoritedList.grabTimeline().execute();
 

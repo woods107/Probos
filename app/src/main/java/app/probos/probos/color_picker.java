@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 
@@ -18,11 +19,12 @@ import android.view.View;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toolbar;
+//import android.widget.Toolbar;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 public class color_picker extends AppCompatActivity {
     ConstraintLayout cpLayout;
+    Toolbar tool;
     int mDefaultColor;
     int sDefaultColor;
     Button cpButton;
@@ -36,10 +38,14 @@ public class color_picker extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
+       // tool = findViewById(R.id.toolbar);
+       /* setSupportActionBar(tool);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
         //android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
         cpLayout=(ConstraintLayout) findViewById(R.id.activity_color_picker);
+        //tool=(Toolbar) findViewById(R.id.toolbar);
         backButton=(Button)findViewById(R.id.backButton);
         cpButton =(Button) findViewById(R.id.colorPicker);
         scpButton=(Button) findViewById(R.id.secondColorPicker);
@@ -59,11 +65,13 @@ public class color_picker extends AppCompatActivity {
             scpButton.setBackgroundColor(sDefaultColor);
             backButton.setBackgroundColor(sDefaultColor);
             rdButton.setBackgroundColor(sDefaultColor);
+            tool.setBackgroundColor(sDefaultColor);
         }else{
             cpButton.setBackgroundColor(sDefaultColor);
             scpButton.setBackgroundColor(sDefaultColor);
             backButton.setBackgroundColor(sDefaultColor);
             rdButton.setBackgroundColor(sDefaultColor);
+            tool.setBackgroundColor(sDefaultColor);
         }
         //toolbar.setBackgroundColor(sDefaultColor);
 
@@ -104,6 +112,7 @@ public class color_picker extends AppCompatActivity {
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
                 rdButton.setBackgroundColor(sDefaultColor);
+                tool.setBackgroundColor(sDefaultColor);
                 //toolbar.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
@@ -152,6 +161,7 @@ public class color_picker extends AppCompatActivity {
                 scpButton.setBackgroundColor(sDefaultColor);
                 backButton.setBackgroundColor(sDefaultColor);
                 rdButton.setBackgroundColor(sDefaultColor);
+                tool.setBackgroundColor(sDefaultColor);
                 //toolbar.setBackgroundColor(sDefaultColor);
                 SharedPreferences li = getSharedPreferences("Color", MODE_PRIVATE);
                 SharedPreferences.Editor Ed = li.edit();
