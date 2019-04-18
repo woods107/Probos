@@ -96,7 +96,7 @@ public class DraftActivity extends AppCompatActivity {
         String[] settings = {"visible","private","test","DanielSmeels"};
         Status.Visibility visibility = Status.Visibility.Public;
 */      EditText draft_body = findViewById(R.id.draft_body);
-        if(!prevStatus.equals("")){
+        if(prevStatus != null && !prevStatus.equals("")){
             draft_body.setText(prevStatus);
         }
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -192,13 +192,14 @@ public class DraftActivity extends AppCompatActivity {
 
             // Grab Files based on user selection in order to prepare to send them
 
-            public void onClick(View view) {
+           public void onClick(View view) {
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_SINGLE_FILE);
-
+           }
+        });
         FloatingActionButton saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             //do stuff for privacy settings
@@ -308,15 +309,15 @@ public class DraftActivity extends AppCompatActivity {
         });
 
 
-            }
+    }
 
 
 
-        });//End onClickListener
+        //});//End onClickListener
 
 
 
-    }// End activity OnCreate
+        //}// End activity OnCreate
 
 
     @Override

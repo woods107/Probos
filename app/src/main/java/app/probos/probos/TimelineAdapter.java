@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -114,8 +115,12 @@ public class TimelineAdapter extends
     private ArrayList<Boolean> isBoostedList = new ArrayList<>();
     private ArrayList<ArrayList<Bitmap>> mediaLists = new ArrayList<>();
     private ArrayList<Boolean> displaying = new ArrayList<>();
+    private boolean noRefresh = false;
 
-
+    public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName, int noRefreshFlag) {
+        this(statuses,accessToken,instanceName);
+        noRefresh = true;
+    }
 
     // Pass in the contact array into the constructor
     public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
@@ -220,7 +225,7 @@ public class TimelineAdapter extends
         Long id = status.getId();
 
 
-        if (position == mStatuses.size()-1) {
+        if (position == mStatuses.size()-1 && !noRefresh) {
             Thread olderRetrieval = new Thread(new Runnable() {
                 @Override
                 public void run() {

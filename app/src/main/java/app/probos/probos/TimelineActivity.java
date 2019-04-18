@@ -298,6 +298,17 @@ public class TimelineActivity extends AppCompatActivity {
 
             builder.show();
 
+        } else if (id == R.id.lists) {
+            try {
+                Intent intent = new Intent(this, ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessTokenStr);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException();
+            }
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

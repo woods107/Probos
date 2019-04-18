@@ -57,6 +57,10 @@
             android:name=".TimelineActivity"
             android:label="@string/title_activity_timeline"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ListsActivity"
+            android:label="@string/title_activity_lists"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

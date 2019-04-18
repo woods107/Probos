@@ -82,7 +82,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:srcCompat="@android:drawable/ic_menu_save"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="left|center_vertical"
         android:layout_margin="16dp"
         />
 
