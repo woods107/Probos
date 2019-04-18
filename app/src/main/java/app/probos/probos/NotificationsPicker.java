@@ -77,6 +77,7 @@ public class NotificationsPicker extends AppCompatActivity {
         setContentView(R.layout.activity_notifications_picker);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
 
@@ -159,8 +160,23 @@ public class NotificationsPicker extends AppCompatActivity {
             }
         });
 
-       
+
+
+
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
+
 
     /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {

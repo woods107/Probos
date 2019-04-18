@@ -50,4 +50,15 @@
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ColorWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="17dp"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="149dp"
+        android:textColor="#efefef"
+        android:text="Color Preview: Reset App to Apply"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

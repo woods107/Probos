@@ -66,6 +66,7 @@ public class TimelineActivity extends AppCompatActivity {
     static String accessTokenStr;
     static boolean staySignedIn;
     static String flag = "PERSONAL";
+    FloatingActionButton fab;
     MastodonClient client;
     CoordinatorLayout tLayout;
     int defaultColor;
@@ -134,7 +135,7 @@ public class TimelineActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setBackgroundColor(sDefaultColor);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -345,6 +346,9 @@ public class TimelineActivity extends AppCompatActivity {
             try {
                 Intent intent = new Intent(this, color_picker.class);
                 startActivity(intent);
+                fab.setBackgroundColor(sDefaultColor);
+                tLayout.setBackgroundColor(defaultColor);
+                bar.setBackgroundColor(sDefaultColor);
                 //finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
