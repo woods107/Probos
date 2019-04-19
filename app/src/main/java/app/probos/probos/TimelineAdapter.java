@@ -395,6 +395,7 @@ public class TimelineAdapter extends
                     public void run() {
                         try {
                             if (isFavoritedList.get(viewHolder.getAdapterPosition())){
+
                                 statusesAPI.postUnfavourite(id).execute();
                                 isFavoritedList.set(viewHolder.getAdapterPosition(), false);
                                 favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);

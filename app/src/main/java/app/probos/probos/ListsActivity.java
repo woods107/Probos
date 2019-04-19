@@ -23,7 +23,9 @@ import com.sys1yagi.mastodon4j.api.method.MastodonLists;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
 public class ListsActivity extends AppCompatActivity {
 
@@ -156,6 +158,7 @@ public class ListsActivity extends AppCompatActivity {
         protected Void doInBackground(Void... param) {
             Range range = new Range(null,null,50);
             try {
+
                 // Gets the first 50 users from the list of followers acctId has
 
                 //Pageable<MastodonList> listPageable;
@@ -164,6 +167,13 @@ public class ListsActivity extends AppCompatActivity {
                 //} else {
                 //    users = tmpAcct.getFollowing(acctId, range).execute();
                 //}
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("title","Whatever")
+                        .build();
+                userClient.post("lists", requestBody);
+
+
                 lists = tmpLists.getLists().execute().getPart();
                 ArrayList<String> listNames = new ArrayList<>();
                 for (int i = 0; i < lists.size(); i++) {
