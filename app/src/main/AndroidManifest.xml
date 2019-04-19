@@ -44,8 +44,9 @@
                 <category android:name="android.intent.category.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
 
-                <data android:scheme="urn:ietf:wg:oauth:2.0:oob" />
+                <data android:scheme="oauth-authorize" />
             </intent-filter>
         </activity>
         <activity android:name=".WebViewActivity" />

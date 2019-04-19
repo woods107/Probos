@@ -300,13 +300,14 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
                 String clientId = registration.getClientId();
                 String url = apps.getOAuthUrl(clientId, new Scope(Scope.Name.ALL),"urn:ietf:wg:oauth:2.0:oob");
-
                 // url like bellow
                 // https://:instance_name/oauth/authorize?client_id=:client_id&redirect_uri=:redirect_uri&response_type=code&scope=read
                 // open url and OAuth login and get auth code
                 Intent intent = new Intent(InstanceChoiceActivity.this, WebViewActivity.class);
                 intent.putExtra("url", url);
+
                 startActivity(intent);
+                Uri uri = intent.getData();
 
 // 	accessToken needs to be saved.
 

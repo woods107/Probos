@@ -12,6 +12,7 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         android:paddingBottom="@dimen/appbar_padding_top"
         android:paddingTop="@dimen/appbar_padding_top"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -154,6 +155,19 @@
         app:srcCompat="@android:drawable/btn_plus"
         tools:layout_editor_absoluteX="294dp"
         tools:layout_editor_absoluteY="202dp" />
+
+    <Button
+        android:id="@+id/pinsViewButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        android:text="View Pinned Statuses"
+        android:textColor="#dbdbdb"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/profileBio" />
 
 
 </android.support.constraint.ConstraintLayout>

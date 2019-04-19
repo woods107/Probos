@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -157,6 +158,18 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        Button pinsListButton = (Button) findViewById(R.id.pinsViewButton);
+        pinsListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessToken);
+                intent.putExtra("pins", true);
+                intent.putExtra("acctId", acctId);
+                startActivity(intent);
+            }
+        });
 
 
        /* infoRetrieval = new Thread(new Runnable() {
@@ -235,6 +248,7 @@ public class ProfileActivity extends AppCompatActivity {
                 accounts.add(acctId);
                 relationship = tmpAcct.getRelationships(accounts).execute().get(0);
                 follow = relationship.isFollowing();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
