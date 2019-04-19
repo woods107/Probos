@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.probos.probos">
-
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,12 +16,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".NotificationsPicker"
+            android:label="@string/title_activity_notifications_picker"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".UserListActivity"
             android:label="@string/title_activity_user_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ProfileActivity"
             android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:label="EditProfileActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ExpandedStatusActivity"
@@ -46,12 +54,12 @@
         </activity>
         <activity android:name=".WebViewActivity" />
         <activity
-            android:name=".TimelineActivity"
-            android:label="@string/title_activity_timeline"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".DraftActivity"
             android:label="@string/title_activity_draft"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TimelineActivity"
+            android:label="@string/title_activity_timeline"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

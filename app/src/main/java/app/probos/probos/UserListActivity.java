@@ -1,6 +1,7 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,9 +42,14 @@ public class UserListActivity extends AppCompatActivity {
         this.acctId = acctId;
     }
     */
+    MastodonClient userClient;
+    Accounts tmpAcct;
 
     RecyclerView userRecycler;
     List<Account> accounts;
+
+    UserListAdapter userListAdapter;
+    int toGet = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,7 @@ public class UserListActivity extends AppCompatActivity {
         acctId = currIntent.getLongExtra("id", 0);
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
+        toGet = currIntent.getIntExtra("toGet",0);
 
         // Begin instantiating the userRecycler
         userRecycler = findViewById(R.id.user_recycler);
@@ -66,11 +73,13 @@ public class UserListActivity extends AppCompatActivity {
         // Figure out how to set this up better
         //View rootView = getLayoutInflater().inflate
 
-        MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
-        Accounts tmpAcct = new Accounts(userClient);
+        userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        tmpAcct = new Accounts(userClient);
 
 
-        Thread followerRetrieval = new Thread(new Runnable() {
+
+
+        /*Thread followerRetrieval = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -92,14 +101,46 @@ public class UserListActivity extends AppCompatActivity {
             followerRetrieval.join();
         } catch (Exception e) {
             //do nothing
-        }
-
+        }*/
+        new setUpList().execute();
 
         //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
-        UserListAdapter userListAdapter = new UserListAdapter(accounts);
         userRecycler.setAdapter(userListAdapter);
         userRecycler.setLayoutManager(new LinearLayoutManager(this));
         userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
+        //return rootView;
+
+    }
+
+    private class setUpList extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... param) {
+            try {
+                // Gets the first 50 users from the list of followers acctId has
+                Range range = new Range(null,null,50);
+                Pageable<Account> users;
+                if (toGet == 1) {
+                    users = tmpAcct.getFollowers(acctId, range).execute();
+                } else {
+                    users = tmpAcct.getFollowing(acctId, range).execute();
+                }
+                accounts = users.getPart();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            userListAdapter = new UserListAdapter(accounts);
+            return null;
+        }
+
+        protected void onPostExecute(Void param) {
+            userRecycler.setAdapter(userListAdapter);
+        }
+
+        //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
+        //UserListAdapter userListAdapter = new UserListAdapter(accounts);
+        //userRecycler.setAdapter(userListAdapter);
+        //userRecycler.setLayoutManager(new LinearLayoutManager(this));
+        //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
         //return rootView;
 
     }
@@ -117,5 +158,7 @@ public class UserListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
+
 
 }

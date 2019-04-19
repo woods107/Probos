@@ -1,5 +1,6 @@
 package app.probos.probos;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class Tab2Local extends Fragment {
     String accessToken;
     RecyclerView localRecycler;
     Public pub;
+    boolean loaded = false;
 
     public void setInfo(String instanceName, String accessToken){
         this.accessToken = accessToken;
@@ -37,27 +39,24 @@ public class Tab2Local extends Fragment {
     TimelineAdapter timelineAdapter;
     SwipeRefreshLayout swipeLayout;
 
-    public void grabTimeline() {
-        Thread timelineRetrieval = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Range range = new Range(null,null,50);
-                    Pageable<Status> statuses = pub.getLocalPublic(range).execute();
-                    statusList = statuses.getPart();
-                } catch (Exception e) {
-                    throw new IllegalArgumentException();
-                }
-                timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
+    private class grabTimeline extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... param) {
+            try {
+                Range range = new Range(null, null, 50);
+                Pageable<com.sys1yagi.mastodon4j.api.entity.Status> statuses = pub.getLocalPublic(range).execute();
+                statusList = statuses.getPart();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
             }
-        });
+            timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
+            loaded = true;
+            return null;
+        }
 
-        timelineRetrieval.start();
-
-        try {
-            timelineRetrieval.join();
-        } catch (Exception e) {
-            //do nothing
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            localRecycler.setAdapter(timelineAdapter);
         }
     }
 
@@ -67,7 +66,7 @@ public class Tab2Local extends Fragment {
         MastodonClient authClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         //Timelines timelines = new Timelines(authClient);
         pub = new Public(authClient);
-        grabTimeline();
+        new grabTimeline().execute();
     }
 
     @Override
@@ -80,7 +79,7 @@ public class Tab2Local extends Fragment {
             @Override
             public void onRefresh() {
                 // Your code here
-                grabTimeline();
+                new grabTimeline().execute();
                 localRecycler.setAdapter(timelineAdapter);
                 // To keep animation for 4 seconds
                 new Handler().postDelayed(new Runnable() {

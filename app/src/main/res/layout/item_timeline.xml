@@ -67,13 +67,14 @@
             android:id="@+id/msgTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:layout_marginStart="8dp"
             android:text="TextView"
             android:textColor="#777777"
 
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/msgMessage" />
+            app:layout_constraintTop_toBottomOf="@+id/mediaView1" />
 
         <View
             android:layout_width="match_parent"
@@ -89,11 +90,12 @@
             android:id="@+id/favorite_button"
             android:layout_width="23dp"
             android:layout_height="22dp"
-            android:layout_marginLeft="200dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/boost_button"
             app:layout_constraintTop_toBottomOf="@+id/msgTime"
             app:srcCompat="@android:drawable/btn_star_big_off" />
 
@@ -102,10 +104,11 @@
             android:layout_width="23dp"
             android:layout_height="22dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
             app:srcCompat="@android:drawable/ic_menu_rotate"
-            app:layout_constraintLeft_toRightOf="@id/favorite_button"
+            app:layout_constraintRight_toLeftOf="@id/reply_button"
             app:layout_constraintTop_toBottomOf="@+id/msgTime"
             tools:layout_editor_absoluteX="142dp"
             tools:layout_editor_absoluteY="114dp" />
@@ -115,9 +118,10 @@
             android:layout_width="23dp"
             android:layout_height="22dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
-            app:layout_constraintLeft_toRightOf="@id/boost_button"
+            app:layout_constraintRight_toLeftOf="@id/delete_button"
             app:layout_constraintTop_toBottomOf="@+id/msgTime"
             app:srcCompat="@android:drawable/ic_menu_revert" />
 
@@ -131,6 +135,53 @@
             android:textColor="#dbdbdb"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/sensitive_button"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:text="show/hide"
+            android:textColor="#dbdbdb"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/mediaView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toTopOf="@id/msgTime"
+            app:layout_constraintTop_toBottomOf="@id/msgMessage"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:srcCompat="@mipmap/ic_launcher_foreground" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="23dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:visibility="invisible"
+            app:layout_constraintRight_toLeftOf="@id/more_button"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
+
+        <ImageButton
+            android:id="@+id/mute_button"
+            android:layout_width="23dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            app:srcCompat="@android:drawable/stat_notify_call_mute"
+            app:layout_constraintRight_toLeftOf="@id/favorite_button"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
