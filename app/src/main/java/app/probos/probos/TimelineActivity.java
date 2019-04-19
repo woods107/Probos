@@ -241,7 +241,19 @@ public class TimelineActivity extends AppCompatActivity {
 
             } catch (Exception e) { e.printStackTrace(); }
             return true;
+        } else if (id == R.id.lists) {
+            try {
+                Intent intent = new Intent(this, ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessTokenStr);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException();
+            }
+            return true;
         }
+
         /*else if (id == R.id.action_displayName) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -334,8 +346,8 @@ public class TimelineActivity extends AppCompatActivity {
 
             builder.show();
 
+        }
         }*/
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -3,25 +3,19 @@ package app.probos.probos;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 //import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
-import com.sys1yagi.mastodon4j.MastodonRequest;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.entity.Account;
-import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
-import com.sys1yagi.mastodon4j.api.method.Timelines;
 
 import java.util.List;
 
@@ -68,7 +62,7 @@ public class UserListActivity extends AppCompatActivity {
         toGet = currIntent.getIntExtra("toGet",0);
 
         // Begin instantiating the userRecycler
-        userRecycler = findViewById(R.id.user_recycler);
+        userRecycler = findViewById(R.id.listitem_recycler);
 
         // Figure out how to set this up better
         //View rootView = getLayoutInflater().inflate

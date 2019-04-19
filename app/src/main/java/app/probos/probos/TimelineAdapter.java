@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,7 +53,11 @@ import java.util.concurrent.ExecutionException;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
 
 import static app.probos.probos.TimelineActivity.accessTokenStr;
 import static app.probos.probos.TimelineActivity.instanceName;
@@ -82,6 +87,7 @@ public class TimelineAdapter extends
         public Button moreButton;
         public ImageButton muteButton;
         public Button sensitiveButton;
+        public ImageButton pinButton;
 
 
         // We also create a constructor that accepts the entire item row
@@ -104,6 +110,7 @@ public class TimelineAdapter extends
             mediaView1 = (ImageView) itemView.findViewById(R.id.mediaView1);
             deleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
             muteButton = (ImageButton) itemView.findViewById(R.id.mute_button);
+            pinButton = (ImageButton) itemView.findViewById(R.id.pin_button);
         }
     }
 
@@ -115,8 +122,12 @@ public class TimelineAdapter extends
     private ArrayList<Boolean> isBoostedList = new ArrayList<>();
     private ArrayList<ArrayList<Bitmap>> mediaLists = new ArrayList<>();
     private ArrayList<Boolean> displaying = new ArrayList<>();
+    private boolean noRefresh = false;
 
-
+    public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName, int noRefreshFlag) {
+        this(statuses,accessToken,instanceName);
+        noRefresh = true;
+    }
 
     // Pass in the contact array into the constructor
     public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
@@ -221,7 +232,7 @@ public class TimelineAdapter extends
         Long id = status.getId();
 
 
-        if (position == mStatuses.size()-1) {
+        if (position == mStatuses.size()-1 && !noRefresh) {
             Thread olderRetrieval = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -500,8 +511,6 @@ public class TimelineAdapter extends
                }
            }
         });
-
-
         ImageButton muteButton = viewHolder.muteButton;
         //Looper.prepare();
         muteButton.setOnClickListener(new View.OnClickListener(){
@@ -674,6 +683,23 @@ public class TimelineAdapter extends
             }
         });
 
+        ImageButton pinButton = viewHolder.pinButton;
+
+        if(position < isAuthorOfPost.size() && isAuthorOfPost.get(viewHolder.getAdapterPosition())){
+            //show delete button
+            pinButton.setVisibility(View.VISIBLE);
+
+        }else{
+            pinButton.setVisibility(View.INVISIBLE);
+        }
+
+        pinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Long id = status.getId();
+                new sendPin(id).execute();
+            }
+        });
 
     }
 
@@ -707,6 +733,36 @@ public class TimelineAdapter extends
         protected Void doInBackground(Void... param) {
             try {
                 statusesAPI.deleteStatus(id);
+            } catch (Exception e){
+                throw new IllegalArgumentException();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+        }
+    }
+
+    private class sendPin extends AsyncTask<Void, Void, Void>
+    {
+        Long id;
+
+        public sendPin(Long id) {
+            this.id = id;
+        }
+
+        protected Void doInBackground(Void... param) {
+            try {
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("id",id.toString())
+                        .build();
+                int code = client.post("statuses/" + id + "/pin", requestBody).code();
+                if (code == 422 || code == 500) {
+                    client.post("statuses/" + id + "/unpin", requestBody);
+                }
             } catch (Exception e){
                 throw new IllegalArgumentException();
             }

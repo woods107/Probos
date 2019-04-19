@@ -16,4 +16,9 @@
         android:orderInCategory="100"
         android:title="Notifications"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/lists"
+        android:orderInCategory="100"
+        android:title="Lists"
+        app:showAsAction="never" />
 </menu>

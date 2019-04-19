@@ -199,7 +199,7 @@ public class DraftActivity extends AppCompatActivity {
 
             // Grab Files based on user selection in order to prepare to send them
 
-            public void onClick(View view) {
+           public void onClick(View view) {
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -209,6 +209,7 @@ public class DraftActivity extends AppCompatActivity {
             }
 
         });// End attach_media onClickListener
+
 
 
         FloatingActionButton saveButton = findViewById(R.id.save_button);
@@ -319,12 +320,15 @@ public class DraftActivity extends AppCompatActivity {
             }
         });// End saveButton OnClickListener
 
+    }
 
 
 
+        //});//End onClickListener
 
 
-    }// End activity OnCreate
+
+        //}// End activity OnCreate
 
     String[] draftSaveSettings = {"Draft 1", "Draft 2", "Draft 3"};
     int counter = 0;
