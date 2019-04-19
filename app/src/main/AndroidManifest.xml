@@ -35,6 +35,10 @@
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".EditProfileActivity"
+            android:label="EditProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".ExpandedStatusActivity"
             android:label="@string/title_activity_expanded_status"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -47,13 +51,12 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <category android:name="android.intent.category.VIEW" />
+                <!--category android:name="android.intent.category.VIEW" -->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
 
-                <data android:scheme="urn:ietf:wg:oauth:2.0:oob" />
+                <data android:scheme="oauth-probos"  />
             </intent-filter>
         </activity>
         <activity android:name=".WebViewActivity" />
@@ -64,6 +67,10 @@
         <activity
             android:name=".TimelineActivity"
             android:label="@string/title_activity_timeline"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ListsActivity"
+            android:label="@string/title_activity_lists"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

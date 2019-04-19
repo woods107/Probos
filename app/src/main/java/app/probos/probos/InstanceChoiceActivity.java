@@ -112,6 +112,25 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
 
     AccessToken accessTokensaved;
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // the intent filter defined in AndroidManifest will handle the return from ACTION_VIEW intent
+        Intent mIntent = getIntent();
+        Uri uri = mIntent.getData();
+        if (uri != null && uri.toString().startsWith("oauth-probos://redirect_oauth")) {
+            authCode = uri.getQueryParameter("code");
+            try {
+                actualSignIn();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,6 +172,17 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
+            }
+        }
+
+        Intent mIntent = this.getIntent();
+        Uri uri = mIntent.getData();
+        if (uri != null && uri.toString().startsWith("oauth-probos://redirect_oauth")) {
+            authCode = uri.getQueryParameter("code");
+            try {
+                actualSignIn();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -212,6 +242,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             }
         });
 
+        /*Button mSignInButton = (Button) findViewById(R.id.signin_button);
         Button mSignInButton = (Button) findViewById(R.id.signin_button);
         mSignInButton.setBackgroundColor(sDefaultColor);
         mSignInButton.setOnClickListener(new OnClickListener() {
@@ -237,7 +268,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                             .show();
                 }
             }
-        });
+        });*/
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -318,7 +349,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 try {
                     registration = apps.createApp(
                             "Probos",
-                            "urn:ietf:wg:oauth:2.0:oob",
+                            "oauth-probos://redirect_oauth",
                             new Scope(Scope.Name.ALL),
                             "https://probos.app"
                     ).execute();
@@ -339,14 +370,19 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 }
 
                 String clientId = registration.getClientId();
-                String url = apps.getOAuthUrl(clientId, new Scope(Scope.Name.ALL),"urn:ietf:wg:oauth:2.0:oob");
-
+                String url = apps.getOAuthUrl(clientId, new Scope(Scope.Name.ALL),"oauth-probos://redirect_oauth");
                 // url like bellow
                 // https://:instance_name/oauth/authorize?client_id=:client_id&redirect_uri=:redirect_uri&response_type=code&scope=read
                 // open url and OAuth login and get auth code
-                Intent intent = new Intent(InstanceChoiceActivity.this, WebViewActivity.class);
-                intent.putExtra("url", url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                //intent.putExtra("url", url);
+
                 startActivity(intent);
+
+                //finish();
+
+
+                //Uri uri = intent.getData();
 
 // 	accessToken needs to be saved.
 
@@ -402,9 +438,9 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     AccessToken accessToken;
 
     private void actualSignIn() throws Mastodon4jRequestException {
-        TextView authField = findViewById(R.id.auth_text);
-        authCode = authField.getText().toString();
-        MastodonRequest<AccessToken> accessTokenMastodonRequest = apps.getAccessToken(clientId, clientSecret, "urn:ietf:wg:oauth:2.0:oob", authCode, "authorization_code");
+        //TextView authField = findViewById(R.id.auth_text);
+        //authCode = authField.getText().toString();
+        MastodonRequest<AccessToken> accessTokenMastodonRequest = apps.getAccessToken(clientId, clientSecret, "oauth-probos://redirect_oauth", authCode, "authorization_code");
         Thread finalAuthThr = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -638,7 +674,8 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleOAuthResponse(intent);
+        setIntent(intent);
+        onResume();
     }
 
     private void handleOAuthResponse(Intent intent) {

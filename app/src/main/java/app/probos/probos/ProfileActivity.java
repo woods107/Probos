@@ -1,5 +1,8 @@
 package app.probos.probos;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,18 +15,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.entity.Account;
+import com.sys1yagi.mastodon4j.api.entity.MastodonList;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.MastodonLists;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.entity.Relationship;
 import com.sys1yagi.mastodon4j.api.method.Follows;
@@ -36,20 +47,25 @@ import java.util.List;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 //import android.view.LayoutInflater;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    // Get these three things before starting anything
+    // Get these four things before starting anything
 
     String instanceName;
     String accessToken;
     Long acctId;
+    Long meId;
 
+    MenuItem editItem;
     Accounts tmpAcct;
-    Account currAcct;
+    Account currAcct, me;
     Bitmap ppBitmap;
     Bitmap bannerBitmap;
     Relationship relationship;
@@ -59,6 +75,12 @@ public class ProfileActivity extends AppCompatActivity {
     int defaultColor;
     int sDefaultColor;
 
+    MastodonClient userClient;
+    MastodonLists tmpLists;
+    List<MastodonList> lists;
+
+    ArrayAdapter<String> choiceSpinAdapter;
+    Spinner listSpinner;
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
         this.instanceName = instanceName;
@@ -79,6 +101,7 @@ public class ProfileActivity extends AppCompatActivity {
         // This line here should enable a back button on the action bar
         // Once the UI is more developed, it will be useful to have
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Intent currIntent = getIntent();
         acctId = currIntent.getLongExtra("id", 0);
@@ -103,11 +126,74 @@ public class ProfileActivity extends AppCompatActivity {
         // Begin instantiating the userRecycler
         // userRecycler = findViewById(R.id.user_recycler);
 
-        // Figure out how to set this up better
-        //View rootView = getLayoutInflater().inflate
-
-        MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
+
+        //BEGIN EDIT LIST CODE
+
+        ImageButton listButton = (ImageButton) findViewById(R.id.listButton);
+        listButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                String[] settings = {"OK", "Cancel"};
+                //Looper.prepare();
+
+                try {
+                    listSpinner = new Spinner(ProfileActivity.this);
+                    new findLists().execute();
+                    AlertDialog.Builder listMenu = new AlertDialog.Builder(view.getContext());
+                    listMenu.setTitle("Add User To List:");
+                    //final EditText newTitle= new EditText(view.getContext());
+                    listMenu.setView(listSpinner);
+                    //Looper.prepare();
+                    listMenu.setItems(settings, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // the user clicked on colors[which]
+                            switch (which) {
+                                case 0:
+                                    //create list
+                                    //create new list object with
+                                   // new ListsActivity.createList(newTitle.getText().toString()).execute();
+                                    Long listId = lists.get(listSpinner.getSelectedItemPosition()).getId();
+                                    String path = "lists/" + listId + "/accounts";
+                                    String accountForm = acctId.toString();
+                                    RequestBody requestBody = new MultipartBody.Builder()
+                                            .setType(MultipartBody.FORM)
+                                            .addFormDataPart("account_ids[]",accountForm)
+                                            .build();
+                                    new addToList(path, requestBody).execute();
+                                    break;
+                                case 1:
+                                    //do nothing
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        }
+                    });
+                    listMenu.show();
+                    //add turning button on/off
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button pinsListButton = (Button) findViewById(R.id.pinsViewButton);
+        pinsListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessToken);
+                intent.putExtra("pins", true);
+                intent.putExtra("acctId", acctId);
+                startActivity(intent);
+            }
+        });
+
 
        /* infoRetrieval = new Thread(new Runnable() {
             @Override
@@ -129,11 +215,56 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    private class addToList extends AsyncTask<Void, Void, Void> {
+        String path;
+        RequestBody requestBody;
+
+        private addToList(String p, RequestBody req) {
+            path = p;
+            requestBody = req;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Response pls = userClient.post(path, requestBody);
+            int code = pls.code();
+            return null;
+        }
+    }
+
+    private class findLists extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                tmpLists = new MastodonLists(userClient);
+                lists = tmpLists.getLists().execute().getPart();
+                ArrayList<String> listNames = new ArrayList<>();
+
+                for (int i = 0; i < lists.size(); i++) {
+                    listNames.add(lists.get(i).getTitle());
+                }
+                choiceSpinAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_spinner_item, listNames);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            //listSpinner.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            listSpinner.setAdapter(choiceSpinAdapter);
+        }
+    }
+
     private class setUpViews extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... param) {
             try {
                 currAcct = tmpAcct.getAccount(acctId).execute();
+                me = tmpAcct.getVerifyCredentials().execute();
+                meId = me.getId();
                 URL newPP = new URL(currAcct.getAvatar());
                 URL newBanner = new URL(currAcct.getHeader());
                 ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
@@ -142,6 +273,7 @@ public class ProfileActivity extends AppCompatActivity {
                 accounts.add(acctId);
                 relationship = tmpAcct.getRelationships(accounts).execute().get(0);
                 follow = relationship.isFollowing();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -159,6 +291,10 @@ public class ProfileActivity extends AppCompatActivity {
 
             TextView userName = findViewById(R.id.fullUserName);
             userName.setText("@" + currAcct.getAcct());
+
+            if (acctId.equals(meId)) {
+                editItem.setVisible(true);
+            }
 
             TextView followersCount = findViewById(R.id.followers_count);
             followersCount.setText(String.valueOf(currAcct.getFollowersCount()));
@@ -201,6 +337,10 @@ public class ProfileActivity extends AppCompatActivity {
             TextView profileBio = findViewById(R.id.profileBio);
             profileBio.setText(Html.fromHtml(currAcct.getNote(), Html.FROM_HTML_MODE_COMPACT));
 
+            TextView disclaimer = findViewById(R.id.disclaimerText);
+            String disclaimerText = "Information displayed here may reflect the user's profile incompletely. For the full profile, go to: " + currAcct.getUrl();
+            disclaimer.setText(disclaimerText);
+
             ImageView profBanner = findViewById(R.id.profile_banner);
             profBanner.setImageBitmap(bannerBitmap);
 
@@ -225,9 +365,15 @@ public class ProfileActivity extends AppCompatActivity {
             });
             ImageButton followButton= findViewById(R.id.followButton);
             followButton.setBackgroundColor(sDefaultColor);
+
+            if ( acctId != me.getId() ) {
+                followButton.setVisibility(View.VISIBLE);
+            }
+
+
             if(follow) {
                 followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
-            }else{
+            } else {
                 followButton.setImageResource(android.R.drawable.ic_input_add);
             }
 
@@ -263,14 +409,22 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
 
+    }
 
-        //TimelineAdapter userListAdapter = new TimelineAdapter(accounts);
-        //UserListAdapter userListAdapter = new UserListAdapter(accounts);
-        //userRecycler.setAdapter(userListAdapter);
-        //userRecycler.setLayoutManager(new LinearLayoutManager(this));
-        //userRecycler.getLayoutManager().setMeasurementCacheEnabled(true);
-        //return rootView;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new setUpViews().execute();
+    }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_profile, menu);
+        editItem = menu.getItem(0);
+        editItem.setVisible(false);
+        return true;
     }
 
     @Override
@@ -279,6 +433,18 @@ public class ProfileActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_edit:
+                Intent intent = new Intent(this, EditProfileActivity.class);
+                intent.putExtra("id", meId);
+                intent.putExtra("token", TimelineActivity.accessTokenStr);
+                intent.putExtra("name", TimelineActivity.instanceName);
+                // Need to add a Context/ContextWrapper startActivity statement here
+                try {
+                    this.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }// End try/catch block
                 return true;
         }
 

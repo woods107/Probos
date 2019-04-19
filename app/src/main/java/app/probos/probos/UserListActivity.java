@@ -19,13 +19,10 @@ import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
-import com.sys1yagi.mastodon4j.MastodonRequest;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.entity.Account;
-import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
-import com.sys1yagi.mastodon4j.api.method.Timelines;
 
 import java.util.List;
 
@@ -89,7 +86,7 @@ public class UserListActivity extends AppCompatActivity {
         }
         toolbar.setBackgroundColor(sDefaultColor);
         // Begin instantiating the userRecycler
-        userRecycler = findViewById(R.id.user_recycler);
+        userRecycler = findViewById(R.id.listitem_recycler);
 
         // Figure out how to set this up better
         //View rootView = getLayoutInflater().inflate

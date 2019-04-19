@@ -11,10 +11,10 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/appbar_padding_top"
+        app:layout_constraintTop_toTopOf="parent"
         android:paddingBottom="@dimen/appbar_padding_top"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay" >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -78,16 +78,31 @@
         android:id="@+id/profileBio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:padding="8dp"
         android:background="@color/colorPrimary"
         android:text="TextView"
         android:textColor="#dbdbdb"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_banner" />
+
+    <TextView
+        android:id="@+id/disclaimerText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="1dp"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:text="TextView"
+        android:textColor="#969696"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileBio" />
 
     <TextView
         android:id="@+id/followers_count"
@@ -140,9 +155,34 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginBottom="24dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/following"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
+
+    <ImageButton
+        android:id="@+id/listButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/following"
+        app:layout_constraintStart_toStartOf="@id/following"
+        app:srcCompat="@android:drawable/btn_plus"
+        tools:layout_editor_absoluteX="294dp"
+        tools:layout_editor_absoluteY="202dp" />
+
+    <Button
+        android:id="@+id/pinsViewButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        android:text="View Pinned Statuses"
+        android:textColor="#dbdbdb"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/disclaimerText" />
 
 
 </android.support.constraint.ConstraintLayout>

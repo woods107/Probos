@@ -58,28 +58,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/get_auth"
                 android:textColor="#efefef"
+                android:text="Sign In"
                 android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
-
-    <TextView
-        android:id="@+id/oauth_user_describe"
-        android:layout_width="match_parent"
-        android:layout_height="67dp"
-        android:text='After pressing "Get Authentication Code", you will be redirected to an authentication page. Copy the code given to you after sign-in and paste it below.'
-        android:textColor="#efefef"/>
-
-    <EditText
-        android:id="@+id/auth_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/authcode"
-        android:textColor="#efefef"
-        android:inputType="textPassword" />
 
     <CheckBox
         android:id="@+id/checkBox"
@@ -87,12 +71,27 @@
         android:layout_height="wrap_content"
         android:text="Stayed Signed In"
         android:textColor="#efefef"/>
+    <!--TextView
+        android:id="@+id/oauth_user_describe"
+        android:layout_width="match_parent"
+        android:layout_height="67dp"
+        android:text='After pressing "Get Authentication Code", you will be redirected to an authentication page. Copy the code given to you after sign-in and paste it below.' />
+
+    <EditText
+        android:id="@+id/auth_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/authcode"
+        android:inputType="textPassword" />
+
+
 
     <Button
         android:id="@+id/signin_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#efefef"
-        android:text="@string/action_sign_in" />
+        android:text="@string/action_sign_in" /-->
 
 </LinearLayout>

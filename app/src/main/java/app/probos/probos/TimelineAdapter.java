@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,7 +55,11 @@ import java.util.concurrent.ExecutionException;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
 
 import static app.probos.probos.TimelineActivity.accessTokenStr;
 import static app.probos.probos.TimelineActivity.instanceName;
@@ -84,7 +90,7 @@ public class TimelineAdapter extends
         public Button moreButton;
         public ImageButton muteButton;
         public Button sensitiveButton;
-
+        public ImageButton pinButton;
 
 
         // We also create a constructor that accepts the entire item row
@@ -107,6 +113,7 @@ public class TimelineAdapter extends
             mediaView1 = (ImageView) itemView.findViewById(R.id.mediaView1);
             deleteButton = (ImageButton) itemView.findViewById(R.id.delete_button);
             muteButton = (ImageButton) itemView.findViewById(R.id.mute_button);
+            pinButton = (ImageButton) itemView.findViewById(R.id.pin_button);
         }
     }
 
@@ -118,8 +125,12 @@ public class TimelineAdapter extends
     private ArrayList<Boolean> isBoostedList = new ArrayList<>();
     private ArrayList<ArrayList<Bitmap>> mediaLists = new ArrayList<>();
     private ArrayList<Boolean> displaying = new ArrayList<>();
+    private boolean noRefresh = false;
 
-
+    public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName, int noRefreshFlag) {
+        this(statuses,accessToken,instanceName);
+        noRefresh = true;
+    }
 
     // Pass in the contact array into the constructor
     public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
@@ -161,7 +172,6 @@ public class TimelineAdapter extends
                             try {
                                 if (media.get(j).getType().equals("image")) {
                                     imgURL = new URL(media.get(j).getUrl());
-
                                     Bitmap mediaBitmap = BitmapFactory.decodeStream(imgURL.openConnection().getInputStream());
                                     imgs.add(mediaBitmap);
                                 }
@@ -186,7 +196,6 @@ public class TimelineAdapter extends
                 }
             }
         });
-
 
 
         getAcct.start();
@@ -228,8 +237,7 @@ public class TimelineAdapter extends
         Long id = status.getId();
 
 
-
-        if (position == mStatuses.size()-1) {
+        if (position == mStatuses.size()-1 && !noRefresh) {
             Thread olderRetrieval = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -349,8 +357,8 @@ public class TimelineAdapter extends
             display = true;
         } else {
             mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-            mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
-            mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+            mediaView1.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;//mediaLists.get(position).get(0).getHeight();
+            mediaView1.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;//mediaLists.get(position).get(0).getWidth();
             mediaView1.setVisibility(View.VISIBLE);
             display = true;
         }// End contains media if
@@ -472,12 +480,14 @@ public class TimelineAdapter extends
                                case 1:
                                    //delete and redraft
                                    //System.out.println("A weapon to surpass metal gear");
-                                   String prevStatus = msgMsgText.getText().toString();
+                                   String prevStatus = Html.fromHtml(status.getContent(), Html.FROM_HTML_MODE_COMPACT).toString(); //msgMsgText.getText().toString();
+                                   String prevCW = Html.fromHtml(status.getSpoilerText(), Html.FROM_HTML_MODE_COMPACT).toString();
                                    Intent draft = new Intent(view.getContext() , DraftActivity.class);
                                    try {
                                        draft.putExtra("instanceName",instanceName);
                                        draft.putExtra("access",accessTokenStr);
                                        draft.putExtra("prevStatus",prevStatus);
+                                       draft.putExtra("prevCW", prevCW);
 
                                        view.getContext().startActivity(draft);
                                        //TODO: This is the temporary placement of delete for Sprint 2. This does not cover the case where they select delete and redraft and back out of the activity
@@ -648,10 +658,11 @@ public class TimelineAdapter extends
                 if (displaying.get(position)) {
                     rawContent = status.getContent();
                     msgMsgText.setTextColor(Color.WHITE);
-                } else { rawContent = status.getSpoilerText(); msgMsgText.setTextColor(Color.RED); }
+                } else {
+                    rawContent = status.getSpoilerText();
+                    msgMsgText.setTextColor(Color.RED);
+                }
                 msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
-
-
 
                 int size = mediaLists.get(position).size();
                 if (!displaying.get(position) || size == 0) { // Actually do something here
@@ -660,14 +671,38 @@ public class TimelineAdapter extends
                     mediaView1.setVisibility(View.INVISIBLE);
                 } else {
                     mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-                    mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
-                    mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+                    mediaView1.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;//mediaLists.get(position).get(0).getHeight();
+                    mediaView1.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;//mediaLists.get(position).get(0).getWidth();
                     mediaView1.setVisibility(View.VISIBLE);
                 }// End contains media if
                 mediaView1.requestLayout(); // .requestLayout()
 
                 displaying.set(position, !displaying.get(position));
 
+                if (msgMsgText.getText().toString().equals("")) {
+                    if (displaying.get(position)) {
+                        msgMsgText.setText("[[Content Hidden or Sensitive]]");
+                    }
+                }// End empty text checking if
+
+            }
+        });
+
+        ImageButton pinButton = viewHolder.pinButton;
+
+        if(position < isAuthorOfPost.size() && isAuthorOfPost.get(viewHolder.getAdapterPosition())){
+            //show delete button
+            pinButton.setVisibility(View.VISIBLE);
+
+        }else{
+            pinButton.setVisibility(View.INVISIBLE);
+        }
+
+        pinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Long id = status.getId();
+                new sendPin(id).execute();
             }
         });
 
@@ -703,6 +738,36 @@ public class TimelineAdapter extends
         protected Void doInBackground(Void... param) {
             try {
                 statusesAPI.deleteStatus(id);
+            } catch (Exception e){
+                throw new IllegalArgumentException();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+        }
+    }
+
+    private class sendPin extends AsyncTask<Void, Void, Void>
+    {
+        Long id;
+
+        public sendPin(Long id) {
+            this.id = id;
+        }
+
+        protected Void doInBackground(Void... param) {
+            try {
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("id",id.toString())
+                        .build();
+                int code = client.post("statuses/" + id + "/pin", requestBody).code();
+                if (code == 422 || code == 500) {
+                    client.post("statuses/" + id + "/unpin", requestBody);
+                }
             } catch (Exception e){
                 throw new IllegalArgumentException();
             }

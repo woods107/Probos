@@ -37,6 +37,7 @@ import com.sys1yagi.mastodon4j.api.Handler;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
 import com.sys1yagi.mastodon4j.api.Shutdownable;
+import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Notification;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
@@ -226,7 +227,8 @@ public class TimelineActivity extends AppCompatActivity {
                 throw new IllegalArgumentException();
             }
             return true;
-        }else if(id ==R.id.notifications) {
+        }
+        else if(id == R.id.notifications) {
             try {
                 Intent intent = new Intent(this, NotificationsPicker.class);
                 startActivity(intent);
@@ -237,7 +239,76 @@ public class TimelineActivity extends AppCompatActivity {
             return true;
 
         }
-        else if (id == R.id.action_displayName) {
+        else if (id == R.id.action_profile) {
+            try {
+
+                Accounts acct = new Accounts(client);
+
+                Thread profileThr = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Account me = acct.getVerifyCredentials().execute();
+                            Intent intent = new Intent(TimelineActivity.this, ProfileActivity.class);
+                            intent.putExtra("id", me.getId());
+                            intent.putExtra("token", accessTokenStr);
+                            intent.putExtra("name", instanceName);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                profileThr.start();
+
+                try {
+                    profileThr.join();
+                } catch (Exception e) {
+                    //literally do nothing plz
+                    e.printStackTrace();
+                }
+
+
+            } catch (Exception e) { e.printStackTrace(); }
+            return true;
+        } else if (id == R.id.lists) {
+            try {
+                Intent intent = new Intent(this, ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessTokenStr);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException();
+            }
+            return true;
+        } else if(id == R.id.favorites){
+            try {
+                Intent intent = new Intent(this, favoritedList.class);
+                intent.putExtra("accesstoken",accessTokenStr);
+                intent.putExtra("instancename",instanceName);
+                startActivity(intent);
+                //finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
+        }else if(id == R.id.colorPicker) {
+            try {
+                Intent intent = new Intent(this, color_picker.class);
+                startActivity(intent);
+                fab.setBackgroundColor(sDefaultColor);
+                tLayout.setBackgroundColor(defaultColor);
+                bar.setBackgroundColor(sDefaultColor);
+                //finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
+        }
+
+        /*else if (id == R.id.action_displayName) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Display Name");
@@ -331,32 +402,8 @@ public class TimelineActivity extends AppCompatActivity {
 
             builder.show();
 
-        }else if(id == R.id.favorites){
-            try {
-                Intent intent = new Intent(this, favoritedList.class);
-                intent.putExtra("accesstoken",accessTokenStr);
-                intent.putExtra("instancename",instanceName);
-                startActivity(intent);
-                //finish();
-            } catch (Exception e) {
-                throw new IllegalArgumentException();
-            }
-            return true;
-        }else if(id == R.id.colorPicker) {
-            try {
-                Intent intent = new Intent(this, color_picker.class);
-                startActivity(intent);
-                fab.setBackgroundColor(sDefaultColor);
-                tLayout.setBackgroundColor(defaultColor);
-                bar.setBackgroundColor(sDefaultColor);
-                //finish();
-            } catch (Exception e) {
-                throw new IllegalArgumentException();
-            }
-            return true;
         }
-
-
+        }*/
         return super.onOptionsItemSelected(item);
     }
 

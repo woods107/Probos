@@ -22,6 +22,7 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_draft">DraftActivity</string>
+    <string name="title_activity_lists">ListsActivity</string>
     <string name="title_activity_user_list">UserListActivity</string>
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_expanded_status">ExpandedStatusActivity</string>
