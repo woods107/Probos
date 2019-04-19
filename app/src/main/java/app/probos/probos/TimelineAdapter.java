@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -35,6 +36,7 @@ import com.sys1yagi.mastodon4j.api.method.Accounts;
 import com.sys1yagi.mastodon4j.api.method.Public;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Timelines;
+
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -68,6 +70,7 @@ public class TimelineAdapter extends
     MastodonClient client;
     Statuses statusesAPI;
     Accounts accountsAPI;
+    int sDefaultColor;
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -131,6 +134,7 @@ public class TimelineAdapter extends
 
     // Pass in the contact array into the constructor
     public TimelineAdapter(List<Status> statuses, String accessToken, String instanceName) {
+
         mStatuses = statuses;
         client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         statusesAPI = new Statuses(client);
@@ -140,6 +144,7 @@ public class TimelineAdapter extends
             public void run(){
                try {
                    me = accountsAPI.getVerifyCredentials().execute();
+
                } catch (Exception e) {
                    //do nothing
                    e.printStackTrace();

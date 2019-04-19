@@ -31,5 +31,6 @@
     <!--DANIELS TEST STRING-->
     <string name="draft_message">default</string>
     <string name="title_activity_notifications_picker">NotificationsPicker</string>
+    <string name="title_activity_favorited_list">favoritedList</string>
 
 </resources>

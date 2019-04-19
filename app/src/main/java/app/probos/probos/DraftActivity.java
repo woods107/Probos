@@ -9,8 +9,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
@@ -60,6 +63,9 @@ public class DraftActivity extends AppCompatActivity {
     MastodonClient client;
     boolean isReply = false;
     long id = 0;
+    CoordinatorLayout tLayout;
+    int defaultColor;
+    int sDefaultColor;
 
 
     //set visibility variable
@@ -86,6 +92,21 @@ public class DraftActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        tLayout= (CoordinatorLayout) findViewById(R.id.activity_draft);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(DraftActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(DraftActivity.this,R.color.colorPrimary);
+        }
+        toolbar.setBackgroundColor(sDefaultColor);
+
 /*        //set visibility variable
         String[] settings = {"visible","private","test","DanielSmeels"};
         Status.Visibility visibility = Status.Visibility.Public;
@@ -98,6 +119,7 @@ public class DraftActivity extends AppCompatActivity {
             cw_body.setText(prevCW);
         }
         FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setBackgroundColor(sDefaultColor);
         fab.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -159,6 +181,7 @@ public class DraftActivity extends AppCompatActivity {
         });
 
         FloatingActionButton privacy_settings = findViewById(R.id.privacy_settings);
+        privacy_settings.setBackgroundColor(sDefaultColor);
         privacy_settings.setOnClickListener(new View.OnClickListener() {
             //do stuff for privacy settings
 
@@ -195,6 +218,7 @@ public class DraftActivity extends AppCompatActivity {
 
 
         FloatingActionButton attach_media = findViewById(R.id.media_attachment);
+        attach_media.setBackgroundColor(sDefaultColor);
         attach_media.setOnClickListener(new View.OnClickListener() {
 
             // Grab Files based on user selection in order to prepare to send them
@@ -213,6 +237,7 @@ public class DraftActivity extends AppCompatActivity {
 
 
         FloatingActionButton saveButton = findViewById(R.id.save_button);
+        saveButton.setBackgroundColor(sDefaultColor);
         saveButton.setOnClickListener(new View.OnClickListener() {
             //do stuff for privacy settings
 

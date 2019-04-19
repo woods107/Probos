@@ -4,10 +4,13 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -68,6 +71,10 @@ public class ProfileActivity extends AppCompatActivity {
     Relationship relationship;
     Boolean follow;
 
+    ConstraintLayout tLayout;
+    int defaultColor;
+    int sDefaultColor;
+
     MastodonClient userClient;
     MastodonLists tmpLists;
     List<MastodonList> lists;
@@ -101,6 +108,23 @@ public class ProfileActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
+        tLayout= (ConstraintLayout) findViewById(R.id.activity_profile);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(ProfileActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(ProfileActivity.this,R.color.colorPrimary);
+        }
+        toolbar.setBackgroundColor(sDefaultColor);
+
+        // Begin instantiating the userRecycler
+        // userRecycler = findViewById(R.id.user_recycler);
 
         userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
@@ -340,12 +364,14 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
             ImageButton followButton= findViewById(R.id.followButton);
+            followButton.setBackgroundColor(sDefaultColor);
 
             if ( acctId != me.getId() ) {
                 followButton.setVisibility(View.VISIBLE);
             }
 
-            if ( follow ) {
+
+            if(follow) {
                 followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
             } else {
                 followButton.setImageResource(android.R.drawable.ic_input_add);

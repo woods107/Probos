@@ -1,14 +1,21 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 //import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
@@ -29,6 +36,9 @@ public class UserListActivity extends AppCompatActivity {
     String accessToken;
     Long acctId;
 
+    ConstraintLayout tLayout;
+    int defaultColor;
+    int sDefaultColor;
     /*
     public void setInfo(String instanceName, String accessToken, Long acctId) {
         this.instanceName = instanceName;
@@ -61,6 +71,20 @@ public class UserListActivity extends AppCompatActivity {
         accessToken = currIntent.getStringExtra("token");
         toGet = currIntent.getIntExtra("toGet",0);
 
+        tLayout= (ConstraintLayout) findViewById(R.id.activity_user);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(UserListActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(UserListActivity.this,R.color.colorPrimary);
+        }
+        toolbar.setBackgroundColor(sDefaultColor);
         // Begin instantiating the userRecycler
         userRecycler = findViewById(R.id.listitem_recycler);
 

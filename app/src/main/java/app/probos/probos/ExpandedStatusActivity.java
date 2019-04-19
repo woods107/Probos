@@ -1,16 +1,20 @@
 package app.probos.probos;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -48,6 +52,10 @@ public class ExpandedStatusActivity extends AppCompatActivity {
     Statuses tmpStats;
 
     boolean replied = false;
+
+    ConstraintLayout tLayout;
+    int defaultColor;
+    int sDefaultColor;
     //Bitmap bannerBitmap;
 
     /*
@@ -76,6 +84,20 @@ public class ExpandedStatusActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
+        tLayout= (ConstraintLayout) findViewById(R.id.activity_expanded_status);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(ExpandedStatusActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(ExpandedStatusActivity.this,R.color.colorPrimary);
+        }
+        toolbar.setBackgroundColor(sDefaultColor);
         // Begin instantiating the userRecycler
        // userRecycler = findViewById(R.id.user_recycler);
 
