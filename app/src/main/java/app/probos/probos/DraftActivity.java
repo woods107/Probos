@@ -67,19 +67,13 @@ public class DraftActivity extends AppCompatActivity {
     Status.Visibility visibility = Status.Visibility.Public;
 
     String[] draftSettings = {"Save Draft", "Load Draft"};
-    String[] draftSaveSettings = {"Draft 1", "Draft 2", "Draft 3"};
-
-    int counter = 0;
-    MultipartBody.Part attachments[] = new MultipartBody.Part[4];
-    public static final int REQUEST_GET_SINGLE_FILE = 42;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         Intent intent = getIntent();
         client = new MastodonClient.Builder(intent.getStringExtra("instanceName"), new OkHttpClient.Builder(), new Gson()).accessToken(intent.getStringExtra("access")).build();
         String prevStatus = intent.getStringExtra("prevStatus");
-
+        String prevCW = intent.getStringExtra("prevCW");
 
 
         if(intent.getLongExtra("replyID",0)>0){
@@ -96,8 +90,12 @@ public class DraftActivity extends AppCompatActivity {
         String[] settings = {"visible","private","test","DanielSmeels"};
         Status.Visibility visibility = Status.Visibility.Public;
 */      EditText draft_body = findViewById(R.id.draft_body);
-        if(!prevStatus.equals("")){
+        EditText cw_body = findViewById(R.id.cw_body);
+        if(prevStatus != null){
             draft_body.setText(prevStatus);
+        }
+        if (prevCW != null) {
+            cw_body.setText(prevCW);
         }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -108,41 +106,50 @@ public class DraftActivity extends AppCompatActivity {
                 Media mediaPost = new Media(client);
                 Statuses postUse = new Statuses(client);
                 EditText draft_body = findViewById(R.id.draft_body);
+                EditText content_warnings = findViewById(R.id.cw_body);
                 ArrayList<Long> mediaIDs = new ArrayList<>();
 
-                    Thread postThr = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
+                Thread postThr = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
 
-                                if (counter > 0) {
-                                    //TODO WHEN EXPANDED TO MORE THAN ONE ATTACHMENT ACTUALLY ITERATE
-                                    Attachment att = mediaPost.postMedia(attachments[0]).execute();
-                                    //Attachment attReq = att.execute();
+                            if (counter > 0) {
+                                //TODO WHEN EXPANDED TO MORE THAN ONE ATTACHMENT ACTUALLY ITERATE
+                                Attachment att = mediaPost.postMedia(attachments[0]).execute();
+                                //Attachment attReq = att.execute();
 
-                                    mediaIDs.add(att.getId());
-                                }
-
-                                if(id != 0){
-                                    postUse.postStatus(draft_body.getText().toString(), id, mediaIDs, false, null,visibility).execute();
-                                }else {
-                                    postUse.postStatus(draft_body.getText().toString(), null, mediaIDs, false, null,visibility).execute();
-                                }
-                            }catch(Exception e){
-                                //uhhhhhhhhhh
-                                e.printStackTrace();
+                                mediaIDs.add(att.getId());
                             }
+
+                            String cwText = content_warnings.getText().toString();
+                            boolean sense = false;
+                            if (!cwText.equals("")) { sense = true; }
+
+                            if(id != 0){
+
+                                postUse.postStatus(draft_body.getText().toString(), id, mediaIDs, sense, cwText, visibility).execute();
+
+                            } else {
+
+                                postUse.postStatus(draft_body.getText().toString(), null, mediaIDs, sense, cwText, visibility).execute();
+
+                            }
+                        }catch(Exception e){
+                            //uhhhhhhhhhh
+                            e.printStackTrace();
                         }
-                    });
-
-                    postThr.start();
-
-                    try {
-                        postThr.join();
-                    } catch (Exception e) {
-                        //literally do nothing plz
-                        e.printStackTrace();
                     }
+                });
+
+                postThr.start();
+
+                try {
+                    postThr.join();
+                } catch (Exception e) {
+                    //literally do nothing plz
+                    e.printStackTrace();
+                }
 
 
                 //client.post();
@@ -153,7 +160,7 @@ public class DraftActivity extends AppCompatActivity {
 
         FloatingActionButton privacy_settings = findViewById(R.id.privacy_settings);
         privacy_settings.setOnClickListener(new View.OnClickListener() {
-                //do stuff for privacy settings
+            //do stuff for privacy settings
 
             public void onClick(View view) {
                 AlertDialog.Builder settingsMenu = new AlertDialog.Builder(DraftActivity.this);
@@ -198,6 +205,11 @@ public class DraftActivity extends AppCompatActivity {
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GET_SINGLE_FILE);
+
+            }
+
+        });// End attach_media onClickListener
+
 
         FloatingActionButton saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -305,18 +317,20 @@ public class DraftActivity extends AppCompatActivity {
                 });
                 saveButtonMenu.show();
             }
-        });
-
-
-            }
+        });// End saveButton OnClickListener
 
 
 
-        });//End onClickListener
 
 
 
     }// End activity OnCreate
+
+    String[] draftSaveSettings = {"Draft 1", "Draft 2", "Draft 3"};
+    int counter = 0;
+    MultipartBody.Part attachments[] = new MultipartBody.Part[4];
+
+    public static final int REQUEST_GET_SINGLE_FILE = 42;
 
 
     @Override
@@ -349,7 +363,7 @@ public class DraftActivity extends AppCompatActivity {
                     //TODO Use counter to store in correct attachments array spot, check if >=4
 
 
-                    MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
+                    MultipartBody.Part limb = MultipartBody.Part.createFormData("file", f.getName(), RequestBody.create(MediaType.parse("*/*"), f));
                     //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
 
 
@@ -364,5 +378,6 @@ public class DraftActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }// End onActivityResult
+
 }//dear god

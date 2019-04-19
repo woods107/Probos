@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -340,8 +341,8 @@ public class TimelineAdapter extends
             display = true;
         } else {
             mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-            mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
-            mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+            mediaView1.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;//mediaLists.get(position).get(0).getHeight();
+            mediaView1.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;//mediaLists.get(position).get(0).getWidth();
             mediaView1.setVisibility(View.VISIBLE);
             display = true;
         }// End contains media if
@@ -463,12 +464,14 @@ public class TimelineAdapter extends
                                case 1:
                                    //delete and redraft
                                    //System.out.println("A weapon to surpass metal gear");
-                                   String prevStatus = msgMsgText.getText().toString();
+                                   String prevStatus = Html.fromHtml(status.getContent(), Html.FROM_HTML_MODE_COMPACT).toString(); //msgMsgText.getText().toString();
+                                   String prevCW = Html.fromHtml(status.getSpoilerText(), Html.FROM_HTML_MODE_COMPACT).toString();
                                    Intent draft = new Intent(view.getContext() , DraftActivity.class);
                                    try {
                                        draft.putExtra("instanceName",instanceName);
                                        draft.putExtra("access",accessTokenStr);
                                        draft.putExtra("prevStatus",prevStatus);
+                                       draft.putExtra("prevCW", prevCW);
 
                                        view.getContext().startActivity(draft);
                                        //TODO: This is the temporary placement of delete for Sprint 2. This does not cover the case where they select delete and redraft and back out of the activity
@@ -497,6 +500,8 @@ public class TimelineAdapter extends
                }
            }
         });
+
+
         ImageButton muteButton = viewHolder.muteButton;
         //Looper.prepare();
         muteButton.setOnClickListener(new View.OnClickListener(){
@@ -639,10 +644,11 @@ public class TimelineAdapter extends
                 if (displaying.get(position)) {
                     rawContent = status.getContent();
                     msgMsgText.setTextColor(Color.WHITE);
-                } else { rawContent = status.getSpoilerText(); msgMsgText.setTextColor(Color.RED); }
+                } else {
+                    rawContent = status.getSpoilerText();
+                    msgMsgText.setTextColor(Color.RED);
+                }
                 msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
-
-
 
                 int size = mediaLists.get(position).size();
                 if (!displaying.get(position) || size == 0) { // Actually do something here
@@ -651,16 +657,23 @@ public class TimelineAdapter extends
                     mediaView1.setVisibility(View.INVISIBLE);
                 } else {
                     mediaView1.setImageBitmap(mediaLists.get(position).get(0));
-                    mediaView1.getLayoutParams().height = mediaLists.get(position).get(0).getHeight();
-                    mediaView1.getLayoutParams().width = mediaLists.get(position).get(0).getWidth();
+                    mediaView1.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;//mediaLists.get(position).get(0).getHeight();
+                    mediaView1.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;//mediaLists.get(position).get(0).getWidth();
                     mediaView1.setVisibility(View.VISIBLE);
                 }// End contains media if
                 mediaView1.requestLayout(); // .requestLayout()
 
                 displaying.set(position, !displaying.get(position));
 
+                if (msgMsgText.getText().toString().equals("")) {
+                    if (displaying.get(position)) {
+                        msgMsgText.setText("[[Content Hidden or Sensitive]]");
+                    }
+                }// End empty text checking if
+
             }
         });
+
 
     }
 

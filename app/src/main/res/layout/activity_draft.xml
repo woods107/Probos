@@ -6,20 +6,94 @@
     android:layout_height="match_parent"
     tools:context="app.probos.probos.DraftActivity">
 
-    <android.support.design.widget.AppBarLayout
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+        </android.support.design.widget.AppBarLayout>
+
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            android:theme="@style/AppTheme.AppBarOverlay"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="Draft" />
+            app:title="Draft"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    </android.support.design.widget.AppBarLayout>
+
+        <EditText
+            android:id="@+id/draft_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/title_activity_draft_message"
+            android:ems="10"
+            android:gravity="top|left"
+            android:hint="Type your message here..."
+            android:inputType="textMultiLine"
+            android:lines="5"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:layout_editor_absoluteX="3dp"
+            tools:layout_editor_absoluteY="60dp"
+            tools:ignore="NotSibling" />
+
+
+
+        <EditText
+            android:id="@+id/cw_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/title_activity_draft_message"
+            android:ems="10"
+            android:gravity="top|left"
+            android:hint="(Optional) Content warnings"
+            app:layout_constraintTop_toBottomOf="@id/draft_body"
+            tools:layout_editor_absoluteX="3dp"
+            tools:layout_editor_absoluteY="60dp" />
+    </android.support.constraint.ConstraintLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|top"
+        android:layout_marginLeft="16dp"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/ic_menu_save"
+        app:layout_anchor="@id/privacy_settings"
+        app:layout_anchorGravity="top"
+        android:layout_marginBottom="16dp"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/media_attachment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/privacy_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:layout_marginTop="400dp"
+        app:srcCompat="@android:drawable/ic_lock_idle_lock" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -29,61 +103,5 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/privacy_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_gravity="bottom|start"
-        android:layout_margin="16dp"
-
-
-        android:layout_marginTop="400dp"
-        app:srcCompat="@android:drawable/ic_lock_idle_lock" />
-    <!-- app:layout_ConstraintBottom_toTopOf="@+id/fab" -->
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/media_attachment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_margin="16dp"
-        app:srcCompat="@android:drawable/ic_menu_gallery" />
-
-    <EditText
-        android:id="@+id/draft_body"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:layout_marginTop="60dp"
-        android:autofillHints="@string/title_activity_draft_message"
-        android:ems="10"
-        android:hint="@string/title_activity_draft_message"
-        android:inputType="textPersonName" />
-
-    <TextView
-        android:id="@+id/message_recipient"
-
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:textColor="#dbdbdb"
-        android:textSize="16sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_activity_draft_message"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/save_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:srcCompat="@android:drawable/ic_menu_save"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_margin="16dp"
-        />
 
 </android.support.design.widget.CoordinatorLayout>
