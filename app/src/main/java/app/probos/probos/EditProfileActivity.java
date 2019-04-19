@@ -219,12 +219,12 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     if (prof != null) {
                         byte[] profBytes = FileUtils.readFileToByteArray(prof);
-                        profImg = "data:image/jpg;base64," + enc.encodeToString(profBytes);
+                        profImg = "data:image/jpg;base64, " + enc.encodeToString(profBytes);
                     }
 
                     if (head != null) {
                         byte[] headBytes = FileUtils.readFileToByteArray(head);
-                        headImg = "data:image/jpg;base64," + enc.encodeToString(headBytes);
+                        headImg = "data:image/jpg;base64, " + enc.encodeToString(headBytes);
                     }
 
                 } catch (Exception e) { e.printStackTrace(); }

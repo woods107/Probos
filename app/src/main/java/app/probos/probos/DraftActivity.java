@@ -119,7 +119,7 @@ public class DraftActivity extends AppCompatActivity {
 
                             if(id != 0){
                                 postUse.postStatus(draft_body.getText().toString(), id, mediaIDs, false, null,visibility).execute();
-                            }else {
+                            } else {
                                 postUse.postStatus(draft_body.getText().toString(), null, mediaIDs, false, null,visibility).execute();
                             }
                         }catch(Exception e){
@@ -350,7 +350,7 @@ public class DraftActivity extends AppCompatActivity {
                     //TODO Use counter to store in correct attachments array spot, check if >=4
 
 
-                    MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
+                    MultipartBody.Part limb = MultipartBody.Part.createFormData("file", f.getName(), RequestBody.create(MediaType.parse("*/*"), f));
                     //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
 
 

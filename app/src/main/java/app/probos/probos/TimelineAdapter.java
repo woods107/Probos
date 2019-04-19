@@ -640,10 +640,11 @@ public class TimelineAdapter extends
                 if (displaying.get(position)) {
                     rawContent = status.getContent();
                     msgMsgText.setTextColor(Color.WHITE);
-                } else { rawContent = status.getSpoilerText(); msgMsgText.setTextColor(Color.RED); }
+                } else {
+                    rawContent = status.getSpoilerText();
+                    msgMsgText.setTextColor(Color.RED);
+                }
                 msgMsgText.setText(Html.fromHtml(rawContent,Html.FROM_HTML_MODE_COMPACT));
-
-
 
                 int size = mediaLists.get(position).size();
                 if (!displaying.get(position) || size == 0) { // Actually do something here
@@ -659,6 +660,12 @@ public class TimelineAdapter extends
                 mediaView1.requestLayout(); // .requestLayout()
 
                 displaying.set(position, !displaying.get(position));
+
+                if (msgMsgText.getText().toString().equals("")) {
+                    if (displaying.get(position)) {
+                        msgMsgText.setText("[[Content Hidden or Sensitive]]");
+                    }
+                }// End empty text checking if
 
             }
         });
