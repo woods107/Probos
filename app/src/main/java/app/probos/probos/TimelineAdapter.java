@@ -464,12 +464,14 @@ public class TimelineAdapter extends
                                case 1:
                                    //delete and redraft
                                    //System.out.println("A weapon to surpass metal gear");
-                                   String prevStatus = msgMsgText.getText().toString();
+                                   String prevStatus = Html.fromHtml(status.getContent(), Html.FROM_HTML_MODE_COMPACT).toString(); //msgMsgText.getText().toString();
+                                   String prevCW = Html.fromHtml(status.getSpoilerText(), Html.FROM_HTML_MODE_COMPACT).toString();
                                    Intent draft = new Intent(view.getContext() , DraftActivity.class);
                                    try {
                                        draft.putExtra("instanceName",instanceName);
                                        draft.putExtra("access",accessTokenStr);
                                        draft.putExtra("prevStatus",prevStatus);
+                                       draft.putExtra("prevCW", prevCW);
 
                                        view.getContext().startActivity(draft);
                                        //TODO: This is the temporary placement of delete for Sprint 2. This does not cover the case where they select delete and redraft and back out of the activity
