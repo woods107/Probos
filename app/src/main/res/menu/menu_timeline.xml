@@ -7,15 +7,9 @@
         android:orderInCategory="100"
         android:title="Logout"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_displayName"
+    <item android:id="@+id/action_profile"
         android:orderInCategory="100"
-        android:title="Display Name"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_bio"
-        android:orderInCategory="100"
-        android:title="Update Bio"
+        android:title="Your Profile"
         app:showAsAction="never"/>
     <item
         android:id="@+id/notifications"

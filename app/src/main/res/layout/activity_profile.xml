@@ -79,16 +79,31 @@
         android:id="@+id/profileBio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:padding="8dp"
         android:background="@color/colorPrimary"
         android:text="TextView"
         android:textColor="#dbdbdb"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_banner" />
+
+    <TextView
+        android:id="@+id/disclaimerText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="1dp"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:text="TextView"
+        android:textColor="#969696"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileBio" />
 
     <TextView
         android:id="@+id/followers_count"
@@ -141,6 +156,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginBottom="24dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/following"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
@@ -167,7 +183,7 @@
         android:text="View Pinned Statuses"
         android:textColor="#dbdbdb"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/profileBio" />
+        app:layout_constraintTop_toBottomOf="@id/disclaimerText" />
 
 
 </android.support.constraint.ConstraintLayout>
