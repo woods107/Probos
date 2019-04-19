@@ -52,13 +52,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/get_auth"
+                android:text="Sign In"
                 android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
 
-    <TextView
+    <!--TextView
         android:id="@+id/oauth_user_describe"
         android:layout_width="match_parent"
         android:layout_height="67dp"
@@ -76,5 +76,5 @@
         android:id="@+id/signin_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/action_sign_in" />
+        android:text="@string/action_sign_in" /-->
 </LinearLayout>
