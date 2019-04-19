@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
@@ -31,6 +32,9 @@ public class Tab1Personal extends Fragment {
     Timelines timelines;
     boolean loaded = false;
 
+    LinearLayout tLayout;
+    int defaultColor;
+
     public void setInfo(String instanceName, String accessToken){
         this.accessToken = accessToken;
         this.instanceName = instanceName;
@@ -48,6 +52,7 @@ public class Tab1Personal extends Fragment {
                 Pageable<com.sys1yagi.mastodon4j.api.entity.Status> statuses = timelines.getHome(range).execute();
                 statusList = statuses.getPart();
             } catch (Exception e) {
+                    e.printStackTrace();
                     throw new IllegalArgumentException();
             }
             timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);
@@ -67,6 +72,8 @@ public class Tab1Personal extends Fragment {
         MastodonClient authClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         timelines = new Timelines(authClient);
         new grabTimeline().execute();
+
+
 
 
 

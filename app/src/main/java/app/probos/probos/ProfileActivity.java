@@ -1,10 +1,16 @@
 package app.probos.probos;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -12,15 +18,23 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import com.sys1yagi.mastodon4j.api.entity.Account;
+import com.sys1yagi.mastodon4j.api.entity.MastodonList;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.method.MastodonLists;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.entity.Relationship;
 import com.sys1yagi.mastodon4j.api.method.Follows;
@@ -33,7 +47,10 @@ import java.util.List;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 //import android.view.LayoutInflater;
 
@@ -54,6 +71,26 @@ public class ProfileActivity extends AppCompatActivity {
     Relationship relationship;
     Boolean follow;
 
+    ConstraintLayout tLayout;
+    int defaultColor;
+    int sDefaultColor;
+
+    MastodonClient userClient;
+    MastodonLists tmpLists;
+    List<MastodonList> lists;
+
+    ArrayAdapter<String> choiceSpinAdapter;
+    Spinner listSpinner;
+    /*
+    public void setInfo(String instanceName, String accessToken, Long acctId) {
+        this.instanceName = instanceName;
+        this.accessToken = accessToken;
+        this.acctId = acctId;
+    }
+    */
+
+    //RecyclerView userRecycler;
+    //List<Account> accounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +108,154 @@ public class ProfileActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
+        tLayout= (ConstraintLayout) findViewById(R.id.activity_profile);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(ProfileActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(ProfileActivity.this,R.color.colorPrimary);
+        }
+        toolbar.setBackgroundColor(sDefaultColor);
 
-        MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        // Begin instantiating the userRecycler
+        // userRecycler = findViewById(R.id.user_recycler);
+
+        userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
 
+        //BEGIN EDIT LIST CODE
+
+        ImageButton listButton = (ImageButton) findViewById(R.id.listButton);
+        listButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                String[] settings = {"OK", "Cancel"};
+                //Looper.prepare();
+
+                try {
+                    listSpinner = new Spinner(ProfileActivity.this);
+                    new findLists().execute();
+                    AlertDialog.Builder listMenu = new AlertDialog.Builder(view.getContext());
+                    listMenu.setTitle("Add User To List:");
+                    //final EditText newTitle= new EditText(view.getContext());
+                    listMenu.setView(listSpinner);
+                    //Looper.prepare();
+                    listMenu.setItems(settings, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // the user clicked on colors[which]
+                            switch (which) {
+                                case 0:
+                                    //create list
+                                    //create new list object with
+                                   // new ListsActivity.createList(newTitle.getText().toString()).execute();
+                                    Long listId = lists.get(listSpinner.getSelectedItemPosition()).getId();
+                                    String path = "lists/" + listId + "/accounts";
+                                    String accountForm = acctId.toString();
+                                    RequestBody requestBody = new MultipartBody.Builder()
+                                            .setType(MultipartBody.FORM)
+                                            .addFormDataPart("account_ids[]",accountForm)
+                                            .build();
+                                    new addToList(path, requestBody).execute();
+                                    break;
+                                case 1:
+                                    //do nothing
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        }
+                    });
+                    listMenu.show();
+                    //add turning button on/off
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button pinsListButton = (Button) findViewById(R.id.pinsViewButton);
+        pinsListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessToken);
+                intent.putExtra("pins", true);
+                intent.putExtra("acctId", acctId);
+                startActivity(intent);
+            }
+        });
+
+
+       /* infoRetrieval = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    currAcct = tmpAcct.getAccount(acctId).execute();
+                    URL newPP = new URL(currAcct.getAvatar());
+                    URL newBanner = new URL(currAcct.getHeader());
+                    ppBitmap = BitmapFactory.decodeStream(newPP.openConnection().getInputStream());
+                    bannerBitmap = BitmapFactory.decodeStream(newBanner.openConnection().getInputStream());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        infoRetrieval.start();*/
         new setUpViews().execute();
 
+    }
+
+    private class addToList extends AsyncTask<Void, Void, Void> {
+        String path;
+        RequestBody requestBody;
+
+        private addToList(String p, RequestBody req) {
+            path = p;
+            requestBody = req;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Response pls = userClient.post(path, requestBody);
+            int code = pls.code();
+            return null;
+        }
+    }
+
+    private class findLists extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                tmpLists = new MastodonLists(userClient);
+                lists = tmpLists.getLists().execute().getPart();
+                ArrayList<String> listNames = new ArrayList<>();
+
+                for (int i = 0; i < lists.size(); i++) {
+                    listNames.add(lists.get(i).getTitle());
+                }
+                choiceSpinAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_spinner_item, listNames);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            //listSpinner.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            listSpinner.setAdapter(choiceSpinAdapter);
+        }
     }
 
     private class setUpViews extends AsyncTask<Void, Void, Void> {
@@ -94,6 +273,7 @@ public class ProfileActivity extends AppCompatActivity {
                 accounts.add(acctId);
                 relationship = tmpAcct.getRelationships(accounts).execute().get(0);
                 follow = relationship.isFollowing();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -184,12 +364,14 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
             ImageButton followButton= findViewById(R.id.followButton);
+            followButton.setBackgroundColor(sDefaultColor);
 
             if ( acctId != me.getId() ) {
                 followButton.setVisibility(View.VISIBLE);
             }
 
-            if ( follow ) {
+
+            if(follow) {
                 followButton.setImageResource(android.R.drawable.checkbox_on_background);//what da image
             } else {
                 followButton.setImageResource(android.R.drawable.ic_input_add);

@@ -27,8 +27,6 @@ import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.entity.Relationship;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -220,7 +218,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 EditText profileBio = (EditText) findViewById(R.id.profileBioEditText);
 
 
-                Base64.Encoder enc = Base64.getEncoder();
+
 
                 try {
 

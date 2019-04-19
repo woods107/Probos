@@ -3,9 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_timeline"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimaryDark">
+    >
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/linearLayout"
@@ -163,8 +164,8 @@
             android:layout_width="23dp"
             android:layout_height="22dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@android:color/transparent"
             android:visibility="invisible"
             app:layout_constraintRight_toLeftOf="@id/more_button"
@@ -182,6 +183,19 @@
             app:srcCompat="@android:drawable/stat_notify_call_mute"
             app:layout_constraintRight_toLeftOf="@id/favorite_button"
             app:layout_constraintTop_toBottomOf="@+id/msgTime" />
+
+        <ImageButton
+            android:id="@+id/pin_button"
+            android:layout_width="23dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintRight_toLeftOf="@id/mute_button"
+            app:layout_constraintTop_toBottomOf="@+id/msgTime"
+            app:srcCompat="@android:drawable/ic_lock_lock"
+            android:visibility="invisible" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

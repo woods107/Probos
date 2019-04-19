@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.renderscript.ScriptGroup;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +45,7 @@ import com.sys1yagi.mastodon4j.api.method.Notifications;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Streaming;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -54,14 +57,22 @@ import okhttp3.OkHttpClient;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Time;
+
 import okhttp3.OkHttpClient;
 
 public class TimelineActivity extends AppCompatActivity {
 
     static String instanceName;
     static String accessTokenStr;
+    static boolean staySignedIn;
     static String flag = "PERSONAL";
+    FloatingActionButton fab;
     MastodonClient client;
+    CoordinatorLayout tLayout;
+    int defaultColor;
+    int sDefaultColor;
+    Toolbar bar;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -86,6 +97,22 @@ public class TimelineActivity extends AppCompatActivity {
         Intent currIntent = getIntent();
         instanceName = currIntent.getStringExtra("instancename");
         accessTokenStr = currIntent.getStringExtra("accesstoken");
+        //staySignedIn = currIntent.getBooleanExtra("staySignedIn",false);
+
+        tLayout= (CoordinatorLayout) findViewById(R.id.activity_timeline);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(TimelineActivity.this, R.color.colorPrimaryDark);
+            tLayout.setBackgroundColor(defaultColor);
+        }else{
+            tLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(TimelineActivity.this,R.color.colorPrimary);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         client = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessTokenStr).build();
@@ -101,12 +128,16 @@ public class TimelineActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        bar = (Toolbar) findViewById(R.id.toolbar);
+        bar.setBackgroundColor(sDefaultColor);
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setBackgroundColor(sDefaultColor);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundColor(sDefaultColor);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -201,7 +232,7 @@ public class TimelineActivity extends AppCompatActivity {
             try {
                 Intent intent = new Intent(this, NotificationsPicker.class);
                 startActivity(intent);
-                finish();
+                //finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
             }
@@ -241,13 +272,49 @@ public class TimelineActivity extends AppCompatActivity {
 
             } catch (Exception e) { e.printStackTrace(); }
             return true;
+        } else if (id == R.id.lists) {
+            try {
+                Intent intent = new Intent(this, ListsActivity.class);
+                intent.putExtra("instanceName", instanceName);
+                intent.putExtra("accessToken", accessTokenStr);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException();
+            }
+            return true;
+        } else if(id == R.id.favorites){
+            try {
+                Intent intent = new Intent(this, favoritedList.class);
+                intent.putExtra("accesstoken",accessTokenStr);
+                intent.putExtra("instancename",instanceName);
+                startActivity(intent);
+                //finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
+        }else if(id == R.id.colorPicker) {
+            try {
+                Intent intent = new Intent(this, color_picker.class);
+                startActivity(intent);
+                fab.setBackgroundColor(sDefaultColor);
+                tLayout.setBackgroundColor(defaultColor);
+                bar.setBackgroundColor(sDefaultColor);
+                //finish();
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            return true;
         }
+
         /*else if (id == R.id.action_displayName) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Display Name");
 
             final EditText in = new EditText(this);
+            //in.setBackgroundColor(sDefaultColor);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(in);
 
@@ -294,6 +361,7 @@ public class TimelineActivity extends AppCompatActivity {
             builder.setTitle("Update Bio");
 
             final EditText in = new EditText(this);
+            //in.setBackgroundColor(sDefaultColor);
             in.setInputType(InputType.TYPE_CLASS_TEXT);
 
             builder.setView(in);
@@ -334,8 +402,8 @@ public class TimelineActivity extends AppCompatActivity {
 
             builder.show();
 
+        }
         }*/
-
         return super.onOptionsItemSelected(item);
     }
 

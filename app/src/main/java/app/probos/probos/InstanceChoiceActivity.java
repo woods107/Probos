@@ -13,8 +13,10 @@ import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -38,7 +40,9 @@ import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -101,21 +105,59 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     private View mProgressView;
     private View mLoginFormView;
     boolean signInSuccess = false;
+    boolean staySignedIn = false;
+    LinearLayout icLayout;
+    int defaultColor;
+    int sDefaultColor;
 
 
     AccessToken accessTokensaved;
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // the intent filter defined in AndroidManifest will handle the return from ACTION_VIEW intent
+        Intent mIntent = getIntent();
+        Uri uri = mIntent.getData();
+        if (uri != null && uri.toString().startsWith("oauth-probos://redirect_oauth")) {
+            authCode = uri.getQueryParameter("code");
+            try {
+                actualSignIn();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_choice);
-       SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
 
+        icLayout= (LinearLayout) findViewById(R.id.activity_instance_choice);
+       SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences sp2=this.getSharedPreferences("Color", MODE_PRIVATE);
         SharedPreferences draft1=this.getSharedPreferences("draft1",MODE_PRIVATE);
         SharedPreferences draft2=this.getSharedPreferences("draft2",MODE_PRIVATE);
         SharedPreferences draft3=this.getSharedPreferences("draft3",MODE_PRIVATE);
 
         String savedAccess=sp1.getString("accessToken", null);
         String savedInstance = sp1.getString("instance", null);
+        defaultColor = sp2.getInt("BackgroundColor", 0);
+        sDefaultColor=sp2.getInt("SecondaryColor",0);
+
+
+        if(defaultColor==0) {
+            defaultColor= ContextCompat.getColor(InstanceChoiceActivity.this, R.color.colorPrimaryDark);
+            icLayout.setBackgroundColor(defaultColor);
+        }else{
+            icLayout.setBackgroundColor(defaultColor);
+        }
+        if(sDefaultColor==0){
+            sDefaultColor= ContextCompat.getColor(InstanceChoiceActivity.this,R.color.colorPrimary);
+        }
         if(savedAccess!=null){
 
 
@@ -130,6 +172,17 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 finish();
             } catch (Exception e) {
                 throw new IllegalArgumentException();
+            }
+        }
+
+        Intent mIntent = this.getIntent();
+        Uri uri = mIntent.getData();
+        if (uri != null && uri.toString().startsWith("oauth-probos://redirect_oauth")) {
+            authCode = uri.getQueryParameter("code");
+            try {
+                actualSignIn();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -149,10 +202,26 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             }
         });*/
 
+        CheckBox StaySignedIn = (CheckBox) findViewById(R.id.checkBox);
+        StaySignedIn.setBackgroundColor(sDefaultColor);
+        StaySignedIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(staySignedIn==true){
+                    staySignedIn=false;
+                }else{
+                    staySignedIn=true;
+                }
+            }
+        });//works as intended
+
         Button mEmailSignInButton = (Button) findViewById(R.id.getauth_button);
+        mEmailSignInButton.setBackgroundColor(sDefaultColor);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences sp1=getSharedPreferences("Login", MODE_PRIVATE);
+                sp1.edit().clear().commit();
                 if (attemptLogin()) {
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -173,7 +242,9 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             }
         });
 
+        /*Button mSignInButton = (Button) findViewById(R.id.signin_button);
         Button mSignInButton = (Button) findViewById(R.id.signin_button);
+        mSignInButton.setBackgroundColor(sDefaultColor);
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,7 +268,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                             .show();
                 }
             }
-        });
+        });*/
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -278,7 +349,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 try {
                     registration = apps.createApp(
                             "Probos",
-                            "urn:ietf:wg:oauth:2.0:oob",
+                            "oauth-probos://redirect_oauth",
                             new Scope(Scope.Name.ALL),
                             "https://probos.app"
                     ).execute();
@@ -299,14 +370,19 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
                 }
 
                 String clientId = registration.getClientId();
-                String url = apps.getOAuthUrl(clientId, new Scope(Scope.Name.ALL),"urn:ietf:wg:oauth:2.0:oob");
-
+                String url = apps.getOAuthUrl(clientId, new Scope(Scope.Name.ALL),"oauth-probos://redirect_oauth");
                 // url like bellow
                 // https://:instance_name/oauth/authorize?client_id=:client_id&redirect_uri=:redirect_uri&response_type=code&scope=read
                 // open url and OAuth login and get auth code
-                Intent intent = new Intent(InstanceChoiceActivity.this, WebViewActivity.class);
-                intent.putExtra("url", url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                //intent.putExtra("url", url);
+
                 startActivity(intent);
+
+                //finish();
+
+
+                //Uri uri = intent.getData();
 
 // 	accessToken needs to be saved.
 
@@ -362,9 +438,9 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     AccessToken accessToken;
 
     private void actualSignIn() throws Mastodon4jRequestException {
-        TextView authField = findViewById(R.id.auth_text);
-        authCode = authField.getText().toString();
-        MastodonRequest<AccessToken> accessTokenMastodonRequest = apps.getAccessToken(clientId, clientSecret, "urn:ietf:wg:oauth:2.0:oob", authCode, "authorization_code");
+        //TextView authField = findViewById(R.id.auth_text);
+        //authCode = authField.getText().toString();
+        MastodonRequest<AccessToken> accessTokenMastodonRequest = apps.getAccessToken(clientId, clientSecret, "oauth-probos://redirect_oauth", authCode, "authorization_code");
         Thread finalAuthThr = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -392,14 +468,21 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
 
         try {
             finalAuthThr.join();
-            SharedPreferences li=getSharedPreferences("Login", MODE_PRIVATE);
-            SharedPreferences.Editor Ed=li.edit();
+
+            if(staySignedIn==true) {
+                SharedPreferences li = getSharedPreferences("Login", MODE_PRIVATE);
+                SharedPreferences.Editor Ed = li.edit();
+
+                Ed.putString("accessToken", accessToken.getAccessToken());
+                Ed.putString("instance", instanceName);
+                Ed.commit();
+            }else{
+                SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+                sp1.edit().clear().commit();
+            }
 
 
 
-            Ed.putString("accessToken",accessToken.getAccessToken());
-            Ed.putString("instance", instanceName);
-            Ed.commit();
 
             //saved draft code
             SharedPreferences draft1=getSharedPreferences("draft1",MODE_PRIVATE);
@@ -420,6 +503,7 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
             Intent intent = new Intent(this, TimelineActivity.class);
             intent.putExtra("accesstoken", accessToken.getAccessToken());
             intent.putExtra("instancename",instanceName);
+            //intent.putExtra("staySignedIn",staySignedIn);
             startActivity(intent);
             finish();
         } catch (Exception e) {
@@ -590,7 +674,8 @@ public class InstanceChoiceActivity extends AppCompatActivity implements LoaderC
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleOAuthResponse(intent);
+        setIntent(intent);
+        onResume();
     }
 
     private void handleOAuthResponse(Intent intent) {
