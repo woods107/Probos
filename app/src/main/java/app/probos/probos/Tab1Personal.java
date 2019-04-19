@@ -48,6 +48,7 @@ public class Tab1Personal extends Fragment {
                 Pageable<com.sys1yagi.mastodon4j.api.entity.Status> statuses = timelines.getHome(range).execute();
                 statusList = statuses.getPart();
             } catch (Exception e) {
+                    e.printStackTrace();
                     throw new IllegalArgumentException();
             }
             timelineAdapter = new TimelineAdapter(statusList, accessToken, instanceName);

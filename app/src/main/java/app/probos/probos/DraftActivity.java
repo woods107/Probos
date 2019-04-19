@@ -349,10 +349,13 @@ public class DraftActivity extends AppCompatActivity {
 
                     //TODO Use counter to store in correct attachments array spot, check if >=4
 
-
-                    MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), f);
+                    MultipartBody.Part limb = MultipartBody.Part.createFormData("file", f.getName(), requestBody);
                     //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
-
+                    /*RequestBody requestBody = new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("file",filePath)
+                            .build();*/
 
 
                     attachments[0] = limb;
