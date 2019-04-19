@@ -58,11 +58,15 @@ public class EditProfileActivity extends AppCompatActivity {
     Bitmap bannerBitmap;
     Relationship relationship;
     Boolean follow;
+    MastodonClient userClient;
 
     File prof = null;
     File head = null;
-    String profImg = null;
-    String headImg = null;
+    /*String profImg = null;
+    String headImg = null;*/
+
+    RequestBody requestBodyAv = null;
+    RequestBody requestBodyHead = null;
 
     public static final int REQUEST_GET_PROFILE_FILE = 13;
     public static final int REQUEST_GET_HEADER_FILE = 23;
@@ -84,7 +88,7 @@ public class EditProfileActivity extends AppCompatActivity {
         instanceName = currIntent.getStringExtra("name");
         accessToken = currIntent.getStringExtra("token");
 
-        MastodonClient userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
+        userClient = new MastodonClient.Builder(instanceName, new OkHttpClient.Builder(), new Gson()).accessToken(accessToken).build();
         tmpAcct = new Accounts(userClient);
 
         new setUpViews().execute();
@@ -204,6 +208,8 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -213,18 +219,28 @@ public class EditProfileActivity extends AppCompatActivity {
                 EditText displayName = (EditText) findViewById(R.id.displayNameEditText);
                 EditText profileBio = (EditText) findViewById(R.id.profileBioEditText);
 
+
                 Base64.Encoder enc = Base64.getEncoder();
 
                 try {
 
                     if (prof != null) {
-                        byte[] profBytes = FileUtils.readFileToByteArray(prof);
-                        profImg = "data:image/jpg;base64, " + enc.encodeToString(profBytes);
+                        requestBodyAv = new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("avatar", prof.getName(), RequestBody.create(MediaType.parse("*/*"), prof))
+                            .build();
+
+                        //byte[] profBytes = FileUtils.readFileToByteArray(prof);
+                        //profImg = "avatar:image/*;base64, " + enc.encodeToString(profBytes);
                     }
 
                     if (head != null) {
-                        byte[] headBytes = FileUtils.readFileToByteArray(head);
-                        headImg = "data:image/jpg;base64, " + enc.encodeToString(headBytes);
+                        requestBodyHead = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("header", head.getName(), RequestBody.create(MediaType.parse("*/*"), head))
+                                .build();
+                        /*byte[] headBytes = FileUtils.readFileToByteArray(head);
+                        headImg = "header:image/*;base64, " + enc.encodeToString(headBytes);*/
                     }
 
                 } catch (Exception e) { e.printStackTrace(); }
@@ -235,15 +251,21 @@ public class EditProfileActivity extends AppCompatActivity {
                     public void run() {
                         try {
 
-                            if (profImg != null && headImg != null) {
-                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), profImg, headImg).execute();
-                            } else if (profImg != null) {
-                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), profImg, null).execute();
-                            } else if (headImg != null) {
-                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, headImg).execute();
-                            } else {
-                                tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, null).execute();
-                            }
+                            if (requestBodyAv != null && requestBodyHead != null) {
+                                userClient.patch("accounts/update_credentials", requestBodyAv);
+                                userClient.patch("accounts/update_credentials", requestBodyHead);
+                                //tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), profImg, headImg).execute();
+                            } else if (requestBodyAv != null) {
+                                userClient.patch("accounts/update_credentials", requestBodyAv);
+                                //tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), profImg, null).execute();
+                            } else if (requestBodyHead != null) {
+                                userClient.patch("accounts/update_credentials", requestBodyHead);
+                                //tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, headImg).execute();
+                            } //else {
+
+                            tmpAcct.updateCredential(displayName.getText().toString(), profileBio.getText().toString(), null, null).execute();
+
+                            //}
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -300,11 +322,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     //TODO determine how exactly to convert a file into a base64 encoded String to submit for user icon and banner
 
                     // This line is the most "correct" but not necessarily for this context
-                    //MultipartBody.Part limb = MultipartBody.Part.createFormData("image", f.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), filePath));
-
-                    // This line is less "correct" but potentially useful
-                    //MultipartBody.Part limb = MultipartBody.Part.create(RequestBody.create(MediaType.parse("image/png"), f));
-
+                    //MultipartBody.Part limb = MultipartBody.Part.createFormData("file", f.getName(), RequestBody.create(MediaType.parse("*/*"), f));
 
                 }// End requestCode check
             }// End RESULT_OK if

@@ -242,7 +242,7 @@ public class TimelineActivity extends AppCompatActivity {
             } catch (Exception e) { e.printStackTrace(); }
             return true;
         }
-        else if (id == R.id.action_displayName) {
+        /*else if (id == R.id.action_displayName) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Display Name");
@@ -334,7 +334,7 @@ public class TimelineActivity extends AppCompatActivity {
 
             builder.show();
 
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

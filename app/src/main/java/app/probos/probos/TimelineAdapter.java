@@ -498,6 +498,8 @@ public class TimelineAdapter extends
                }
            }
         });
+
+
         ImageButton muteButton = viewHolder.muteButton;
         //Looper.prepare();
         muteButton.setOnClickListener(new View.OnClickListener(){
@@ -669,6 +671,7 @@ public class TimelineAdapter extends
 
             }
         });
+
 
     }
 
