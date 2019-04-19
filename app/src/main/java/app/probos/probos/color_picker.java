@@ -38,9 +38,9 @@ public class color_picker extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
-       // tool = findViewById(R.id.toolbar);
-       /* setSupportActionBar(tool);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+        tool = findViewById(R.id.tool);
+        //setSupportActionBar(tool);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 

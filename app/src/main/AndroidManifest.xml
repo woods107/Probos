@@ -16,7 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:largeHeap="true">
-        <activity android:name=".color_picker"></activity>
+        <activity android:name=".color_picker"
+
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".favoritedList"
             android:label="@string/title_activity_favorited_list"
@@ -40,6 +42,7 @@
         <activity
             android:name=".InstanceChoiceActivity"
             android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
