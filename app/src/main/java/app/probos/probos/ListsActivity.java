@@ -167,12 +167,6 @@ public class ListsActivity extends AppCompatActivity {
                 //} else {
                 //    users = tmpAcct.getFollowing(acctId, range).execute();
                 //}
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("title","Whatever")
-                        .build();
-                userClient.post("lists", requestBody);
-
 
                 lists = tmpLists.getLists().execute().getPart();
                 ArrayList<String> listNames = new ArrayList<>();
