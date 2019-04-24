@@ -69,7 +69,7 @@
         android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stayed Signed In"
+        android:text="Stay Signed In"
         android:textColor="#efefef"/>
     <!--TextView
         android:id="@+id/oauth_user_describe"
